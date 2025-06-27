@@ -1,17 +1,27 @@
 <template>
-    <div class="col s12 m7">
-        <h2 class="header">Horizontal Card</h2>
+    
         <div class="card horizontal">
             <div class="card-stacked">
                 <div class="card-content">
-                    <p>I am a very simple card. I am good at containing small bits of information.</p>
+                    <div class="row input-field">
+                        <textarea id="textarea1" class="materialize-textarea"></textarea>
+                        <label for="textarea1">Nova tarefa</label>
+                    </div>
+                    <div class="row">
+                        <div class="col s5 bg-blue-300">
+                            <a class="waves-effect waves-light btn">Salvar</a>
+                            <a class="waves-effect waves-light btn"><i class="material-icons">date_range</i></a>
+                            <a class="waves-effect waves-light btn"><i class="material-icons">flag</i></a>
+                        </div>
+                    </div>
+                    
                 </div>
-                <div class="card-action">
-                    <a href="#">This is a link</a>
-                </div>
+                <!-- <div class="card-action">
+                    
+                </div> -->
             </div>
         </div>
-    </div>
+    
 </template>
 
 <script>
@@ -24,3 +34,7 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+
+</style>
