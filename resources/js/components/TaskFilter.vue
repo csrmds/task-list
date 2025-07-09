@@ -1,11 +1,8 @@
 <template>
 
-    <div class="w-full">
-        <div class="row input-field">
-            <input id="busca" class="materialize-input"/>
-            <label for="busca">Busca</label>
-        </div>
-    </div>
+    <v-row>
+        <v-text-field label="busca" variant="underlined"></v-text-field>
+    </v-row>
 
 </template>
 

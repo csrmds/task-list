@@ -2,34 +2,18 @@
 
 @section("content")
 
-  <div class="container">
-    {{-- NOVA TAREFA --}}
-    <div class="row">
-        <div class="col s12 flex justify-center">
-          <div class="w-192">
-            <task-new></task-new>  
-          </div>
-			  </div>
-    </div>
+<v-container >
 
-    {{-- CAMPO DE PESQUISA / FILTRO --}}
-    <div class="row">
-        <div class="col s12 flex justify-center">
-			    <div class="w-160">
-            <task-filter/>
-          </div>
-        </div>
-    </div>
+	<home>
 
-    {{-- LISTA DE TAREFAS --}}
-    <div class="row">
-        <div class="col s12 flex justify-center ">
-          <div class="w-192">
-            <task-list/>
-          </div>
-        </div>
-    </div>
-  </div>
+	
+
+	</home>
+
+
+    
+
+</v-container>
 
   
 
