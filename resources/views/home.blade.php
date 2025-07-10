@@ -4,14 +4,7 @@
 
 <v-container >
 
-	<home>
-
-	
-
-	</home>
-
-
-    
+	<home></home>
 
 </v-container>
 

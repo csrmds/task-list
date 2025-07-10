@@ -3,40 +3,52 @@
     <v-table>
         <thead>
             <tr>
-                <th>Descrição</th>
-                <th>Agenda</th>
-                <th>Status</th>
-                <th>Ação</th>
+                <th class="font-weight-bold">Descrição</th>
+                <th class="text-center font-weight-bold">Agenda</th>
+                <th class="text-center font-weight-bold">Status</th>
+                <th class="text-center font-weight-bold">Categoria</th>
+                <th class="text-center font-weight-bold">
+                    Ação
+                </th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="(task, i) in taskList" :key="i">
                 <td>{{ task.descricao }}</td>
-                <td>{{ task.agenda_inicio }}</td>
-                <td>{{ task.status }}</td>
-                <td>
-                    <v-icon icon="mdi-file-edit-outline" size="large" @click="edit(task.id)"></v-icon>
-                    <v-icon icon="mdi-delete-outline" size="large" @click="destroy(task.id)"></v-icon>
+                <td class="text-center">{{ formatDate(task.agenda_inicio)  }}</td>
+                <td class="text-center">{{ task.status }}</td>
+                <td class="text-center">{{ task.categoria }}</td>
+                <td class="d-flex ga-2 align-center">
+                    <v-btn 
+                        icon="mdi-file-edit-outline" 
+                        variant="elevated" 
+                        size="default" 
+                        density="comfortable"
+                        class="bg-teal-lighten-2"
+                        @click="callEditModal(task)">
+                    </v-btn>
+                    <v-btn 
+                        icon="mdi-delete-outline" 
+                        variant="elevated" 
+                        size="default" 
+                        density="comfortable"
+                        class="bg-red-lighten-2"
+                        @click="destroy(task.id)">
+                    </v-btn>
                 </td>
             </tr>
         </tbody>
     </v-table>
-    <!-- <div>
-            <task-edit-modal :taskData="selectedTask"></task-edit-modal>
-        </div> -->
 
 </template>
 
 
 
 <script>
+import { format } from 'date-fns';
 
 export default {
     name: 'task-list',
-
-    // props: {
-
-    // },
 
     data() {
         return {
@@ -47,7 +59,6 @@ export default {
                 agenda_inicio: null,
                 status: null
             },
-            modal: null
         };
     },
 
@@ -58,7 +69,7 @@ export default {
                 const response= await fetch('/task/list')
                 const data= await response.json();
                 this.taskList= data;
-                console.log("consultou dados: ", data);
+                //console.log("consultou dados: ", data);
             } catch(error) {
                 console.error("Erro ao listar tarefas: ", error);
             }
@@ -71,7 +82,7 @@ export default {
             const data= await response.json()
             this.selectedTask= data
             console.log("modal: ", this.modal)
-            this.modal.open()
+            // this.modal.open()
             console.log("edit: ", data);
         },
 
@@ -81,27 +92,21 @@ export default {
             const data= await response.json()
             console.log("resposta: ", data)
             this.getList()
-            // const response= await fetch('/task/destroy/', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Accept': 'application/json',
-            //         'X-CSRF-TOKEN': window.csrfToken
-            //     },
-            //     body: JSON.stringify({id: id})
-            // });
-            // console.log("destroy: ", await response.json());
-        //},
+        },
 
-        // async selectTask() {
+        formatDate(param) {
+            const [date, hour]= param.split(" ")
+            return format(date, 'dd/MM/yy') +" às "+format(param, 'HH:mm')
+        },
 
+        callEditModal(param) {
+            console.log("callEditModal param: ", param)
+            this.$emit('callEditModal', param)
         }
     },
 
     mounted() {
         this.getList()
-        // const elems= document.getElementById('taskEdit')
-        // this.modal= M.Modal.init(elems, {})
     }
 };
 </script>

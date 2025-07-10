@@ -75,9 +75,28 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
+
+        logger("update request: ", $request->input('taskData'));
+
+        try {
+            $taskData= $request->input('taskData');
+            $id= $taskData['id'];
+            $task= Task::find($id);
+            $task->descricao= $taskData['descricao'];
+            $task->agenda_inicio= $taskData['agenda_inicio'];
+            $task->agenda_fim= $taskData['agenda_fim'];
+            $task->status= $taskData['status'];
+            $task->responsavel= $taskData['responsavel'];
+            $task->categoria= $taskData['categoria'];
+            $task->tags= $taskData['tags'];
+
+            $task->save();
+            return response(json_encode($task));
+        } catch (\Exception $e) {
+            return response(json_encode($e->getMessage()));
+        }
     }
 
     /**

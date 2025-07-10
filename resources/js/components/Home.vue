@@ -23,9 +23,17 @@
     <v-row>
         <v-col>
 			<v-sheet class="mx-auto w-50">
-        		<task-list ref="TaskList"></task-list>
+        		<task-list ref="TaskList" @callEditModal="openEditModal($event)"></task-list>
         	</v-sheet>
 		</v-col>
+    </v-row>
+
+    <v-row>
+        <v-col>
+            <v-sheet>
+                <task-edit-modal @callRefreshTaskList="refreshTaskList()" ref="TaskEditModal" class="w-50" :taskData="taskData" ></task-edit-modal>
+            </v-sheet>
+        </v-col>
     </v-row>
     
 </template>
@@ -33,26 +41,30 @@
 
 <script>
 import TaskList from './TaskList.vue'
+import TaskEditModal from './TaskEditModal.vue'
 
 export default {
     components: {
-        TaskList
+        TaskList,
+        TaskEditModal
     },
 
     data() {
         return {
-            escuta: "algum texto"
+            taskData: null
         }
     },
 
     methods: {
-        testePai(param) {
-            console.log("evento escutado: ", param)
+        refreshTaskList() {
+            //console.log("ouviu e chamou refreshTaskList no componente Pai")
+            this.$refs.TaskList.getList()
         },
 
-        refreshTaskList() {
-            console.log("ouviu e chamou refreshTaskList no componente Pai")
-            this.$refs.TaskList.getList()
+        openEditModal(param) {
+            this.taskData= param
+            this.$refs.TaskEditModal.modalView= true
+            console.log("parametro descricao recebido: ", param)
         }
     }
 }

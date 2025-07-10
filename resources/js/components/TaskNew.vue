@@ -1,6 +1,6 @@
 <template>
 
-    <v-card class="pa-4 bg-deep-purple-lighten-4">
+    <v-card class="pa-4 bg-lime-lighten-2">
         <v-textarea rows="1" label="Nova Tarefa" variant="underlined" v-model="descricao"></v-textarea>
         <v-card-actions>
 
@@ -53,7 +53,7 @@
 
                 
                 <v-col cols="2" align-self="center" justify="center" >
-                    <v-btn variant="tonal" class="w-100" @click="teste()">Emit</v-btn>
+                    <!-- <v-btn variant="tonal" class="w-100" @click="teste()">Emit</v-btn> -->
                 </v-col>
 
                 <v-col cols="2" align-self="center" justify="center" >
@@ -84,10 +84,10 @@ export default {
             agenda_hora: null,
             agenda_fim: null,
             responsavel: null,
-            categorias: ["AZUL", "AMARELO", "VERMELHO"],
             categoria: null,
             tags: null,
             status: "A fazer",
+            categorias: ["AZUL", "AMARELO", "VERMELHO"],
             selectedDate: null,
             formattedDate: "",
             datePickerView: false,
@@ -181,7 +181,7 @@ export default {
                 const [d, M, y]= (this.formattedDate).split('/')
                 const [h, m]= (this.agenda_hora || "00:00").split(':')
                 const dataHora= new Date(y, M, d, h, m)
-                this.agenda_inicio= format(dataHora, 'yyyy-MM-dd hh:mm:ss')
+                this.agenda_inicio= format(dataHora, 'yyyy-MM-dd HH:mm:ss')
             }
 
 
@@ -194,6 +194,7 @@ export default {
                 tags: this.tags,
                 status: this.status
             }
+
             try {
                 const response = await fetch('/task/store', {
                     method: 'POST',

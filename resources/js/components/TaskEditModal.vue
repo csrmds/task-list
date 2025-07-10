@@ -1,49 +1,87 @@
 <template>
-    <!-- Modal Trigger -->
-    <a class="waves-effect waves-light btn modal-trigger" href="#taskEdit">Modal</a>
+    <v-dialog v-model="modalView" >
+        <v-card>
+            <v-card-title class="d-flex justify-space-between align-center">
+                <div class="text-h6 text-medium-emphasis ps-2" >Edição de tarefa</div>
+                <v-btn icon="mdi-close" variant="text" @click="modalView= false"></v-btn>
+            </v-card-title>
+            
 
-    <!-- Modal Structure -->
-    <div id="taskEdit" class="modal">
-        <div class="modal-content">
-            <div class="row">
-                <div class="col s12">
-                    <textarea name="descricao" class="materialize-textarea" v-model="taskData.descricao"></textarea>
-                </div>
-            </div>
+            <v-row class="mx-3">
+                <v-col>
+                    <v-textarea rows="1" variant="underlined" v-model="descricao"></v-textarea>
+                </v-col>
+            </v-row>
 
-            <div class="row">
-                <div class="input-field col s3">
-                    <select>
-                        <option value="amarelo">Amarelo</option>
-                        <option value="azul">Azul</option>
-                        <option value="vermelho">Vermelho</option>
-                    </select>
-                    <label>Categoria</label>
-                </div>
-                <div class="input-field col s2">
-                    <input type="text" class="datepicker" v-model="agenda_data">
-                    <label>Data</label>
-                </div>
-                <div class="input-field col s2">
-                    <input type="text" id="autocomplete-hora" class="autocomplete" v-model="agenda_hora">
-                    <label for="autocomplete-hora">Hora</label>
-                </div>
-                <div class="input-field col s2">
-                    <select v-model="taskData.status">
-                        <option v-for="item in status" :key="item" :value="item">
-                            {{ item }}
-                        </option>
-                    </select>
-                    <label for="autocomplete-hora">Status</label>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <a class="waves-effect waves-green btn-flat">{{ currentStatus }}</a>
-            <a href="#!" class="waves-effect waves-green btn-flat" @click="teste()">Teste</a>
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div>
-    </div>
+            
+            
+            <v-card-actions class="ma-4">
+                <v-row >
+                    <v-col cols="2" align-self="center">
+                        
+                        <v-text-field label="Agenda" variant="underlined" v-model="formattedDate" v-mask="'##/##/####'"></v-text-field>
+
+                        <v-menu v-model="datePickerView" activator="parent" :close-on-content-click="false" id="dropdown-date">
+                            <v-card>
+                                <v-date-picker v-model="selectedDate" autocomplete="off"></v-date-picker>
+
+                                <v-card-actions>
+                                    <v-btn text color="primary" @click="confirmDate">OK</v-btn>
+                                    <v-btn text @click="cancelDate">Cancelar</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-menu>
+                        
+                    </v-col>
+                    
+                    <v-col cols="2" align-self="center">
+                        <v-combobox 
+                            label="Horário"
+                            v-model="agenda_hora"
+                            :items="horaList"
+                            variant="underlined"
+                            v-mask="'##:##'"
+                            autocomplete="off">
+                        </v-combobox>
+                    </v-col>
+                    
+                    <v-col cols="2" align-self="center">
+                        <v-combobox 
+                            label="Categoria"
+                            :items="categorias"
+                            v-model="categoria"
+                            variant="underlined">
+                        </v-combobox>
+                    </v-col>
+                    
+                    <v-col cols="2" align-self="center">
+                        <v-select 
+                            label="Status"
+                            :items="['A fazer', 'Em progresso', 'Concluido']"
+                            v-model="status"
+                            variant="underlined">
+                        </v-select>
+                    </v-col>
+                    
+                    <v-col cols="2" align-self="center" class="d-flex " >
+                        
+                    </v-col>
+                    
+                    <v-col cols="2" align-self="center" class="d-flex justify-center ga-2 " >
+                        <v-btn variant="tonal" class="w-100" @click="save()" >Salvar</v-btn>
+                    </v-col>
+                    
+                    
+                </v-row>
+
+                
+                
+
+
+
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
@@ -56,122 +94,148 @@ export default {
     },
     data() {
         return {
+            id: null,
+            descricao: null,
+            agenda_inicio: null,
+            agenda_data: null,
+            agenda_hora: null,
+            agenda_fim: null,
+            responsavel: null,
+            categoria: null,
+            tags: null,
+            status: null,
             categorias: ["Azul", "Amarelo", "Vermelho"],
             status: ["A fazer", "Em progresso", "Feito"],
-            agenda_data: format(this.taskData.agenda_inicio, "dd/MM/yyyy"),
-            agenda_hora: format(this.taskData.agenda_inicio, "HH:mm"),
-            currentStatus: this.taskData.status
+            selectedDate: null,
+            formattedDate: null,
+            datePickerView: false,
+            modalView: false,
+            horaList: [
+                "06:00",
+                "07:00",
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00",
+                "20:00",
+                "21:00",
+                "22:00",
+                "23:00",
+                "00:00",
+                "01:00",
+                "02:00",
+                "03:00",
+                "04:00",
+                "05:00",
+            ]
         }
     },
 
     methods: {
-        async updateCurrentStatus() {
-            console.log("update currentStatus")
-            console.log("taskData: ", this.taskData.status)
-            this.currentStatus= this.taskData.status
-            console.log("currentStatus: ", this.currentStatus)
+        confirmDate() {
+            this.formattedDate = format(this.selectedDate, "dd/MM/yyyy") 
+            this.datePickerView= !this.datePickerView
         },
 
-        teste() {
-            console.log("currentStatus: ", this.currentStatus)
-            console.log("agenda_data: ", this.agenda_data)
-            console.log("agenda_hora: ", this.agenda_hora)
+        cancelDate() {
+            this.formattedDate= null
+            this.agenda_inicio= null
+            this.agenda_hora= null
+            this.datePickerView= false
+        },
+
+        cleanFields() {
+            this.descricao= null,
+            this.agenda_inicio= null,
+            this.agenda_data= null,
+            this.agenda_hora= null,
+            this.agenda_fim= null,
+            this.responsavel= null,
+            this.categoria= null,
+            this.status= "A fazer",
+            this.formattedDate= null
+        },
+
+        callRefreshTaskList() {
+            this.$emit('callRefreshTaskList')
+        },
+
+        async save() {
+            console.log("formattedDate: ", this.formattedDate)
+            if (this.formattedDate) {
+                const [d, M, y]= (this.formattedDate).split('/')
+                const [h, m]= (this.agenda_hora || "00:00").split(':')
+                const dataHora= new Date(y, M, d, h, m)
+                this.agenda_inicio= format(dataHora, 'yyyy-MM-dd HH:mm:ss')
+            }
+
+            const taskData = {
+                id: this.id,
+                descricao: this.descricao,
+                agenda_inicio: this.agenda_inicio,
+                agenda_fim: this.agenda_fim,
+                responsavel: this.responsavel,
+                categoria: this.categoria,
+                tags: this.tags,
+                status: this.status
+            }
+
+            try {
+                const response = await fetch('/task/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': window.csrfToken
+                    },
+                    body: JSON.stringify({ taskData: taskData })
+                })
+
+                console.log("response: ", await response.json())
+                this.cleanFields()
+                this.callRefreshTaskList()
+                this.modalView= false
+
+            } catch (error) {
+                console.error("Erro ao salvar uma tarefa: ", error)
+            }
         }
+        
     },
 
     mounted() {
-        var elems = document.querySelectorAll('select');
-        var selects = M.FormSelect.init(elems, {});
-        var elems = document.querySelectorAll('.datepicker');
-        var datePicker = M.Datepicker.init(elems, {format: "dd/mm/yyyy", autoClose: true});
-        
-        const timeData = {
-            "00:00": null,
-            "00:30": null,
-            "01:00": null,
-            "01:30": null,
-            "02:00": null,
-            "02:30": null,
-            "03:00": null,
-            "03:30": null,
-            "04:00": null,
-            "04:30": null,
-            "05:00": null,
-            "05:30": null,
-            "06:00": null,
-            "06:30": null,
-            "07:00": null,
-            "07:30": null,
-            "08:00": null,
-            "08:30": null,
-            "09:00": null,
-            "09:30": null,
-            "10:00": null,
-            "10:30": null,
-            "11:00": null,
-            "11:30": null,
-            "12:00": null,
-            "12:30": null,
-            "13:00": null,
-            "13:30": null,
-            "14:00": null,
-            "14:30": null,
-            "15:00": null,
-            "15:30": null,
-            "16:00": null,
-            "16:30": null,
-            "17:00": null,
-            "17:30": null,
-            "18:00": null,
-            "18:30": null,
-            "19:00": null,
-            "19:30": null,
-            "20:00": null,
-            "20:30": null,
-            "21:00": null,
-            "21:30": null,
-            "22:00": null,
-            "22:30": null,
-            "23:00": null,
-            "23:30": null,
-        }
 
-        elems = document.querySelectorAll('.autocomplete');
-        var timeAutocomplete = M.Autocomplete.init(elems, {data: timeData, limit: 4});
     },
 
     watch: {
-        // 'taskData.status'(newVal) {
-        //     console.log("taskData watch...")
-        //     this.$nextTick(()=> {
-        //         //var elems = ;
-        //         M.FormSelect.init(document.querySelectorAll('select'), {});
-        //     })
-        // },
-
-        'taskData.agenda_inicio'(newVal) {
-            console.log('taskData agenda watch', newVal)
-            this.$nextTick(()=> {
-                //const elems = document.querySelectorAll('.datepicker');
-                M.Datepicker.init(document.querySelectorAll('.datepicker'), {format: "dd/mm/yyyy", autoClose: true});
-            })
+        taskData: {
+            handler(newVal) {
+                this.id= newVal?.id,
+                this.descricao= newVal?.descricao || '',
+                this.formattedDate= format(newVal?.agenda_inicio, 'dd/MM/yyyy') || '',
+                this.agenda_hora= format(newVal?.agenda_inicio, 'HH:mm') || '',
+                this.categoria= newVal?.categoria || '',
+                this.status= newVal?.status || 'A fazer',
+                this.tags= newVal?.tags || '',
+                this.agenda_fim= newVal?.agenda_fim || null
+            }
         }
     }
+
+
 }
 </script>
 
 
 <style>
-.modal-content {
-    min-height: 400px;
-}
 
-.datepicker-date-display {
-    display: none !important;
-}
-
-.datepicker-modal {
-    max-width: 330px;
-}
 
 </style>
