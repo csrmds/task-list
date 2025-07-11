@@ -173,7 +173,7 @@ export default {
             if (this.formattedDate) {
                 const [d, M, y]= (this.formattedDate).split('/')
                 const [h, m]= (this.agenda_hora || "00:00").split(':')
-                const dataHora= new Date(y, M, d, h, m)
+                const dataHora= new Date(y, M-1, d, h, m)
                 this.agenda_inicio= format(dataHora, 'yyyy-MM-dd HH:mm:ss')
             }
 

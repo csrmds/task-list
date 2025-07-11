@@ -5,6 +5,12 @@
 		},
 		{
 			"path": "../../sdesk"
+		},
+		{
+			"path": "../simple-post"
+		},
+		{
+			"path": "../../inventories"
 		}
 	],
 	"settings": {}

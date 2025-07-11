@@ -176,11 +176,12 @@ export default {
 
         async save() {
             //event.preventDefault()
-            console.log("formattedDate: ", this.formattedDate)
+            //console.log("formattedDate: ", this.formattedDate)
             if (this.formattedDate) {
+                //console.log("formattedDate: ", this.formattedDate)
                 const [d, M, y]= (this.formattedDate).split('/')
-                const [h, m]= (this.agenda_hora || "00:00").split(':')
-                const dataHora= new Date(y, M, d, h, m)
+                const [h, m, s]= (this.agenda_hora || "00:00:03").split(':')
+                const dataHora= new Date(y, M-1, d, h, m)
                 this.agenda_inicio= format(dataHora, 'yyyy-MM-dd HH:mm:ss')
             }
 

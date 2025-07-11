@@ -78,7 +78,7 @@ class TaskController extends Controller
     public function update(Request $request)
     {
 
-        logger("update request: ", $request->input('taskData'));
+        //logger("update request: ", $request->input('taskData'));
 
         try {
             $taskData= $request->input('taskData');
@@ -104,7 +104,7 @@ class TaskController extends Controller
      */
     public function destroy(Request $request)
     {
-        logger("destroy request: ", $request->all());
+        //logger("destroy request: ", $request->all());
 
         try {
             $id= $request->input('id');
