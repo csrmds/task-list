@@ -71,13 +71,7 @@
                         <v-btn variant="tonal" class="w-100" @click="save()" >Salvar</v-btn>
                     </v-col>
                     
-                    
                 </v-row>
-
-                
-                
-
-
 
             </v-card-actions>
         </v-card>

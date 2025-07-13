@@ -11,13 +11,13 @@
     
 
     <!-- CAMPO DE PESQUISA / FILTRO -->
-    <v-row>
+    <!-- <v-row>
         <v-col>
 			<v-sheet class="mx-auto w-50 px-4">
 				<task-filter/>
 			</v-sheet>
 		</v-col>
-    </v-row>
+    </v-row> -->
 
     <!-- LISTA DE TAREFAS -->
     <v-row>
