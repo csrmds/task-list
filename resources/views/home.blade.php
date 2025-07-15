@@ -4,11 +4,13 @@
 
 <v-container >
 
-	<home></home>
+	@if (Auth::check())
+		<home></home>
+	
+	@endif
+	
 
 </v-container>
-
-  
 
 @endsection
 

@@ -2,6 +2,7 @@
 /* @import './tailwind-like.css'; */
 /* @import './tailwind-bg-colors.css'; */
 /* @import './tailwind-like.css'; */
+@import './custom.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -13,4 +14,10 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+
+.vertical-center {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 

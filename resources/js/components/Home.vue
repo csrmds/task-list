@@ -1,7 +1,7 @@
 <template>
 
     <!-- NOVA TAREFA -->
-	<v-row>
+	<v-row class="mt-14">
 		<v-col>
 			<v-sheet class="mx-auto w-50">
 				<task-new @callRefreshTaskList="refreshTaskList()" ></task-new>
@@ -46,7 +46,7 @@ import TaskEditModal from './TaskEditModal.vue'
 export default {
     components: {
         TaskList,
-        TaskEditModal
+        TaskEditModal,
     },
 
     data() {

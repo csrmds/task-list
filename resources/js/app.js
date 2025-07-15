@@ -42,7 +42,8 @@ import TaskFilter from './components/TaskFilter.vue'
 import TaskList from './components/TaskList.vue'
 import TaskEditModal from './components/TaskEditModal.vue'
 import Home from './components/Home.vue'
-
+import Login from './components/Login.vue'
+import NavBar from './components/NavBar.vue'
 
 
 
@@ -55,6 +56,8 @@ app.component('task-filter', TaskFilter)
 app.component('task-list', TaskList)
 app.component('task-edit-modal', TaskEditModal)
 app.component('home', Home)
+app.component('login', Login)
+app.component('nav-bar', NavBar)
 
 
 app.mount("#task-app")

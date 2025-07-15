@@ -9,6 +9,9 @@
         {{-- Material Icons do Google --}}
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+        {{-- Google API --}}
+        {{-- <script src="https://apis.google.com/js/platform.js" async defer></script> --}}
+
         {{-- Estilo adicional --}}
         <style>
             /* body {
