@@ -1,15 +1,23 @@
 <template>
 
 
-    <v-text-field v-model="search" label="Filtro" variant="underlined" hide-details single-line></v-text-field>
+    <v-text-field v-model="search" label="Filtro" variant="underlined" hide-details single-line
+        class="px-4 bg-teal-lighten-5" />
 
 
     <v-data-table :items="taskList" :headers="dataTableHeaders" :items-per-page="dataTableItemsPerPage" :search="search"
-        hide-default-footer>
+        hide-default-footer
+        class="bg-teal-lighten-5">
         <template v-slot:item="{ item }">
             <tr>
-                <td>{{ item.descricao }}</td>
-                <td class="text-center">{{ formatDate(item.agenda_inicio) }}</td>
+                <td>{{ item.resumo  }}</td>
+                <td class="text-center">
+                    {{ formatDate(item.agenda_inicio) }}
+                    <v-btn class="bg-teal-lighten-5" icon readonly flat>
+                        <img v-if="item.google_calendar_id" :src="iconEnable" width="24">
+                        <!-- <img v-else="item.google_calendar_id" :src="iconDisabled" width="24" > -->
+                    </v-btn>
+                </td>
                 <td :class="{
                         'text-center': true,
                         'bg-yellow-lighten-4': item.status === 'A fazer',
@@ -18,8 +26,8 @@
                     }">
                     {{ item.status }}
                 </td>
-                <td class="text-center">{{ item.categoria }}</td>
-                <td class="d-flex ga-2 align-center">
+                <td class="d-flex ga-2 align-center justify-center">
+                    
                     <v-btn icon="mdi-file-edit-outline" variant="elevated" size="default" density="comfortable"
                         class="bg-teal-lighten-2" @click="callEditModal(item)">
                     </v-btn>
@@ -61,7 +69,9 @@
 
 
 <script>
-import { format, parse, intlFormatDistance, formatRelative, intervalToDuration } from 'date-fns'
+import { format, parse } from 'date-fns'
+import iconEnable from '@/assets/gcalendar.svg'
+import iconDisabled from '@/assets/gcalendar_disabled.svg'
 
 export default {
     name: 'task-list',
@@ -71,15 +81,15 @@ export default {
             taskList: [],
             selectedTask: {
                 id: null,
+                resumo: null,
                 descricao: null,
                 agenda_inicio: null,
                 status: null
             },
             dataTableHeaders: [
-                { title: "Descricao", align: "start", key: "descricao" },
+                { title: "Tarefa", align: "start", key: "resumo" },
                 { title: "Agenda", align: "center", key: "agenda_inicio" },
                 { title: "Status", align: "center", key: "status" },
-                { title: "Categoria", align: "center", key: "categoria" },
                 { title: "Ações", align: "center" }
             ],
             dataTableItemsPerPage: 20,
@@ -89,7 +99,10 @@ export default {
                 {status: "a fazer", color: "lime-lighten-3"},
                 {status: "em progresso", color: "blue-lighten-3"},
                 {status: "concluido", color: "green-lighten-3"},
-            ]
+            ],
+            iconEnable,
+            iconDisabled,
+            calendarIcon: true
         };
     },
 
@@ -97,10 +110,8 @@ export default {
         async getList() {
 
             try {
-                const response = await fetch('/task/list')
-                const data = await response.json();
-                this.taskList = data;
-                //console.log("consultou dados: ", data);
+                const response = await axios.get('/task/list')
+                response.data.success ? this.taskList= response.data.data : false
             } catch (error) {
                 console.error("Erro ao listar tarefas: ", error);
             }
@@ -112,9 +123,7 @@ export default {
             const response = await fetch('/task/id?' + params.toString());
             const data = await response.json()
             this.selectedTask = data
-            console.log("modal: ", this.modal)
-            // this.modal.open()
-            console.log("edit: ", data);
+
         },
 
         async destroy(id) {
@@ -138,15 +147,10 @@ export default {
 
             try {
                 const dateTime = parse(param, "yyyy-MM-dd HH:mm:ss", new Date())
-                const interval = intervalToDuration({ start: Date.now(), end: dateTime })
-                //console.log("data: ", format(dateTime, "dd/MM/yy"), "intl: ", intlFormatDistance(dateTime, Date.now()))
-                //console.log("interval dias/horas: ", interval)
+                //const interval = intervalToDuration({ start: Date.now(), end: dateTime })
+                
 
-                if (interval.days == 1 || (!interval.days && interval.hours > 0)) {
-                    return intlFormatDistance(dateTime, Date.now()) + " às " + format(dateTime, "HH:mm")
-                } else {
-                    return format(dateTime, "dd/MM/yy") + " às " + format(dateTime, "HH:mm")
-                }
+                return format(dateTime, "dd/MM/yy") + " às " + format(dateTime, "HH:mm")
 
             } catch {
                 return "-"
@@ -154,13 +158,19 @@ export default {
         },
 
         callEditModal(param) {
-            console.log("callEditModal param: ", param)
+            //console.log("TaskList $emit callEditModal param: ", param)
             this.$emit('callEditModal', param)
         }
     },
 
     mounted() {
         this.getList()
+    },
+
+    computed: {
+        calendarIcon() {
+            return this.googleCalendar ? this.iconEnable : this.iconDisabled
+        }
     }
 };
 </script>

@@ -37,7 +37,6 @@ class UserController extends Controller {
             $this->user->name= $data['name'];
             $this->user->last_name= $data['last_name'];
             $this->user->email= $data['email'];
-            $this->user->password= $data['google_id'];
             $this->user->google_id= $data['google_id'];
             $this->user->avatar= $data['avatar'];
         }
@@ -68,33 +67,41 @@ class UserController extends Controller {
 
     }
 
+    public function authGoogle(Request $request) {
+
+        return Socialite::driver('google')
+        ->scopes([
+            'openid',
+            'https://www.googleapis.com/auth/calendar',
+        ])
+        ->with(['prompt' => 'select_account'])
+        ->redirect();
+        
+    }
+
     public function authCallback(Request $request) {
         
         try {            
-            $googleUser= Socialite::driver('google')->stateless()->with(['prompt' => 'select_account'])->user();
+            $googleUser= Socialite::driver('google')->stateless()->user();
 
-            $user= User::where('google_id', $googleUser->getId())->first();
+            $user= User::updateOrCreate(
+                ['google_id'=> $googleUser->getId()],
+                [
+                    'name'=> $googleUser->getName(),
+                    'email'=> $googleUser->getEmail(),
+                    'avatar'=> $googleUser->getAvatar(),
+                    'access_token'=> $googleUser->token,
+                    'refresh_token'=> $googleUser->refreshToken,
+                    'token_expires_in'=> $googleUser->expiresIn,
+                ]
+            );
 
-            if ($user) {
-                Auth::login($user);
-
-            } else {
-                $this->user->name= $googleUser->getName();
-                $this->user->google_id= $googleUser->getId();
-                $this->user->email= $googleUser->getEmail();
-                $this->user->avatar= $googleUser->getAvatar();
-                $this->user->password= $googleUser->getId();
-
-                $this->user->save();
-
-                Auth::login($this->user);
-            }
-
+            Auth::login($user);
             
             return redirect('/')->with([
                 'success'=> true,
                 'userData'=> Auth::user()->email,
-                'message'=> "qualquer mensagem"
+                'message'=> "Autenticação realizada com sucesso"
             ]);
         } catch(Exception $e) {
             logger("login error: ", [$e->getMessage()]);
@@ -116,6 +123,41 @@ class UserController extends Controller {
             return response()->json([
                 'success'=> false,
                 'message'=> 'Erro ao fazer logoff',
+                'error'=> $e->getMessage()
+            ]);
+        }
+
+    }
+
+    public function login(Request $request) {
+
+        try {
+
+            $credentials= $request->validate([
+                'email'=> ['required', 'email'],
+                'password'=> ['required']
+            ]);
+
+
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+
+                return response()->json([
+                    'success'=> true,
+                    'message'=> "Login feito com sucesso",
+                ]);
+            } else {
+                return response()->json([
+                    'success'=> false,
+                    'message'=> "Usuário ou senha inválidos"
+                ]);
+            }
+
+            
+        } catch(Exception $e) {
+            return response()->json([
+                'success'=> false,
+                'message'=> 'Erro ao fazer login',
                 'error'=> $e->getMessage()
             ]);
         }

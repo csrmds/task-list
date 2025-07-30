@@ -8,16 +8,6 @@
 			</v-sheet>
 		</v-col>
 	</v-row>
-    
-
-    <!-- CAMPO DE PESQUISA / FILTRO -->
-    <!-- <v-row>
-        <v-col>
-			<v-sheet class="mx-auto w-50 px-4">
-				<task-filter/>
-			</v-sheet>
-		</v-col>
-    </v-row> -->
 
     <!-- LISTA DE TAREFAS -->
     <v-row>
@@ -44,6 +34,10 @@ import TaskList from './TaskList.vue'
 import TaskEditModal from './TaskEditModal.vue'
 
 export default {
+    props: {
+        userData: Object
+    },
+
     components: {
         TaskList,
         TaskEditModal,
@@ -64,7 +58,6 @@ export default {
         openEditModal(param) {
             this.taskData= param
             this.$refs.TaskEditModal.modalView= true
-            console.log("parametro descricao recebido: ", param)
         }
     }
 }

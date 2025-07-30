@@ -1,6 +1,6 @@
 <template>
 
-    <v-app-bar class="bg-light-green-lighten-1">
+    <v-app-bar class="bg-green-lighten-2">
 
         <v-app-bar-title>Task List</v-app-bar-title>
 
@@ -10,7 +10,7 @@
             <v-avatar :image="userData.avatar" size="48"></v-avatar>
             <v-menu activator="parent">
                 <v-list>
-                    <v-list-item link href="/logout">
+                    <v-list-item link href="/auth/logout">
                         <v-list-item-title >Logout</v-list-item-title>
                     </v-list-item>
                 </v-list>
@@ -46,7 +46,7 @@ export default {
     },
 
     mounted() {
-
+        console.log("userData: ", this.userData)
     }
 }
 

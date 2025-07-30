@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
+use Google_Client;
+use Google_Service_Calendar;
 
 class TaskController extends Controller
 {
@@ -11,6 +16,20 @@ class TaskController extends Controller
 
     public function __construct() {
         $this->task= new Task;
+    }
+
+    public function teste(Request $request) {
+        $user= Auth::user();
+        
+        $client= new Google_Client();
+        $client->setAccessToken($user->access_token);
+        
+        $service= new Google_Service_Calendar($client);
+
+        $calendarList= $service->calendarList->listCalendarList();
+        
+        return response(json_encode($calendarList));
+
     }
 
     /**
@@ -23,7 +42,25 @@ class TaskController extends Controller
         return response(json_encode($tasks));
     }
 
-    public function getTasks() {
+    public function getTasks(Request $request) {
+
+        try {
+            $userData= Auth::user();
+
+            $tasks= Task::where('user_id', $userData['id'])->orderBy('agenda_inicio')->get();
+
+            return response()->json([
+                'success'=> true,
+                'data'=> $tasks
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success'=> false,
+                'message'=> 'Erro ao listar tarefas',
+                'error'=> $th
+            ]);
+        }
+
         $tasks= Task::all();
         return response(json_encode($tasks));
     }
@@ -37,6 +74,10 @@ class TaskController extends Controller
     }
 
     protected function setTask($data) {
+        $user= Auth::user();
+        logger("setTask user: ", [$user]);
+
+        $this->task->resumo= $data['resumo'];
         $this->task->descricao= $data['descricao'];
         $this->task->agenda_inicio= $data['agenda_inicio'];
         $this->task->agenda_fim= $data['agenda_fim'];
@@ -44,6 +85,9 @@ class TaskController extends Controller
         $this->task->responsavel= $data['responsavel'];
         $this->task->categoria= $data['categoria'];
         $this->task->tags= $data['tags'];
+        $this->task->google_calendar_id= $data['google_calendar_id'];
+        $this->task->google_calendar_link= $data['google_calendar_link'];
+        $this->task->user_id= $user['id'];
     }
 
     /**
@@ -78,12 +122,14 @@ class TaskController extends Controller
     public function update(Request $request)
     {
 
-        //logger("update request: ", $request->input('taskData'));
+        logger("Task Controller Update request: ", $request->input('taskData'));
 
         try {
             $taskData= $request->input('taskData');
             $id= $taskData['id'];
+            
             $task= Task::find($id);
+            $task->resumo= $taskData['resumo'];
             $task->descricao= $taskData['descricao'];
             $task->agenda_inicio= $taskData['agenda_inicio'];
             $task->agenda_fim= $taskData['agenda_fim'];

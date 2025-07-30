@@ -15,21 +15,21 @@ import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 // Vuetify configuration
 const vuetify = createVuetify({
-  components,
-  directives,
-  theme: {
-    defaultTheme: 'light'
-  },
-  icons: {
-    defaultSet: 'mdi',
-  },
+    components,
+    directives,
+    theme: {
+        defaultTheme: 'light',
+    },
+    icons: {
+        defaultSet: 'mdi',
+    },
 })
 
 // CSRF Token configuration
-const token= document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
 if (token) {
-    axios.defaults.headers.common['X-CSRF-TOKEN']= token
-    window.csrfToken= token
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = token
+    window.csrfToken = token
 } else {
     console.error('CSRF token não encontrado!')
 }
@@ -47,7 +47,7 @@ import NavBar from './components/NavBar.vue'
 
 
 
-const app= createApp({}).use(vuetify)
+const app = createApp({}).use(vuetify)
 app.use(VueTheMask)
 
 // app.component('teste', Teste)

@@ -5,7 +5,7 @@
 <v-container >
 
 	@if (Auth::check())
-		<home></home>
+		<home :user-data='@json(Auth::user())'></home>
 	
 	@endif
 	
