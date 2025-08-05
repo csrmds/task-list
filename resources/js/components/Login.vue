@@ -1,5 +1,7 @@
 <template>
-    <v-card title="Task List Login" class="bg-blue-grey-lighten-4">
+    <v-card title="Login" class="bg-blue-grey-lighten-4">
+
+        <v-form ref="formRef" v-model="formIsValid" >
 
         <v-card-item>
             <v-row>
@@ -7,8 +9,10 @@
                     <v-text-field 
                         label="Email" 
                         variant="underlined"
-                        v-model="email" 
-                        hide-details></v-text-field>
+                        v-model="form.email"
+                        :error="!!errors.email"
+                        :error-messages="errors.email"
+                        ></v-text-field>
                 </v-col>
             </v-row>
             <v-row>
@@ -16,11 +20,13 @@
                     <v-text-field 
                         label="Senha" 
                         variant="underlined" 
-                        v-model="password"
+                        v-model="form.password"
                         :type="passwordText ? 'text' : 'password'"
+                        :error="!!errors.password"
+                        :error-message="!!errors.password"
                         :append-icon="passwordText ? 'mdi-eye' : 'mdi-eye-off'"
                         @click:append="passwordText = !passwordText" 
-                        hide-details></v-text-field>
+                        ></v-text-field>
                 </v-col>
             </v-row>
         </v-card-item>
@@ -30,8 +36,11 @@
 
             <v-row class="">
                 <v-col cols="6" class="d-flex justify-center">
-                    <v-btn @click="login()" width="100%" height="40"  variant="tonal" >Login</v-btn>
+                    <v-btn @click="submitLogin()" width="100%" height="40"  variant="tonal" >Login</v-btn>
                 </v-col>
+                <!-- <v-col cols="3" class="d-flex justify-center">
+                    <v-btn @click="validateForm()"  width="100%" height="40"  variant="tonal" >validate</v-btn>
+                </v-col> -->
                 <v-col cols="6">
                     <button class="gsi-material-button">
                         <div class="gsi-material-button-state"></div>
@@ -54,40 +63,85 @@
                 </v-col>
             </v-row>
 
-            
-
-            
-
         </v-card-actions>
+
+        <v-card-item>
+            <v-row>
+                <v-col cols="12">
+                    <v-alert 
+                        v-if="alertErrorView"
+                        :text="alertErrorMessage" 
+                        type="error" 
+                        variant="tonal" />
+                </v-col>
+            </v-row>
+        </v-card-item>
+
+        </v-form>
+
     </v-card>
 </template>
 
-<script>
+<script setup>
 import axios from 'axios'
+import { ref, reactive } from 'vue'
+import * as yup from 'yup'
 
-export default {
 
-    
-    data() {
-        return {
-            password: null,
-            email: null,
-            passwordText: false,
+const formRef= ref('/auth/login') 
+const formIsValid= ref(false) 
+const passwordText= ref(false)
+const alertErrorView= ref(false)
+const alertErrorMessage= ref('')
+
+const form= reactive({
+    email: '',
+    password: ''
+})
+
+const errors= reactive({
+    email: '',
+    password: ''
+})
+
+const schema= yup.object({
+    email: yup.string().required('Email é obrigatório').email('Endereço inválido'),
+    password: yup.string().required('Senha obrigatória').min(4, 'Mínimo de 4 caracteres')
+})
+
+
+const submitLogin = async() => {
+    errors.email= '',
+    errors.password= ''
+
+    try {
+        await schema.validate(form, {abortEarly: false})    
+        const response= await axios.post('/auth/login', {password: form.password, email: form.email})
+
+        if (response.data.success) {
+            alertErrorView.value= false
+            window.location.href= '/'
+        } else {
+            console.error(response.data.message)
+            alertErrorView.value= true
+            alertErrorMessage.value= response.data.message
         }
-    },
 
-    methods: {
-        async login() {
-            const response= await axios.post('/auth/login', {password: this.password, email: this.email})
-
-            //console.log(response.data)
-
-            if (response.data.success) {
-                window.location.href= '/'
-            } else {
-                console.error(response.data.message)
-            }
+    } catch(err) {
+        console.log('errors: ', errors)
+        console.log("Error trycatch: ", err)
+        if (err.inner) {
+            err.inner.forEach(e=> {
+                console.log('path / message: ', e.path, ': ', e.message)
+                errors[e.path]= e.message
+            })
+        } else {
+            alertErrorMessage.value= err
+            console.error('Erro ao fazer login: ', err)
         }
     }
+
 }
+
+
 </script>
