@@ -1,28 +1,22 @@
 <template>
 
     <!-- NOVA TAREFA -->
-	<v-row class="mt-14">
-		<v-col>
-			<v-sheet class="mx-auto w-50">
-				<task-new @callRefreshTaskList="refreshTaskList()" ></task-new>
-			</v-sheet>
+	<v-row class="mt-14 d-flex justify-center">
+		<v-col cols="12" sm="11" md="10" lg="8" xl="6">
+            <task-new @callRefreshTaskList="refreshTaskList()" :userData="userData" ></task-new>
 		</v-col>
 	</v-row>
 
     <!-- LISTA DE TAREFAS -->
-    <v-row>
-        <v-col>
-			<v-sheet class="mx-auto w-50">
-        		<task-list ref="TaskList" @callEditModal="openEditModal($event)"></task-list>
-        	</v-sheet>
+    <v-row class="d-flex justify-center">
+        <v-col cols="12" sm="11" md="10" lg="8" xl="6">
+            <task-list ref="TaskList" @callEditModal="openEditModal($event)" :userData="userData"></task-list>
 		</v-col>
     </v-row>
 
-    <v-row>
-        <v-col>
-            <v-sheet>
-                <task-edit-modal @callRefreshTaskList="refreshTaskList()" ref="TaskEditModal" class="w-50" :taskData="taskData" ></task-edit-modal>
-            </v-sheet>
+    <v-row class="d-flex justify-center">
+        <v-col cols="12" sm="11" md="10" lg="8" xl="6">
+            <task-edit-modal @callRefreshTaskList="refreshTaskList()" ref="TaskEditModal" class="w-100 w-sm-75 w-md-75 w-lg-50" :taskData="taskData" :userData="userData" ></task-edit-modal>
         </v-col>
     </v-row>
     

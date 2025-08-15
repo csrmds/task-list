@@ -46,7 +46,7 @@ export default {
     },
 
     mounted() {
-        console.log("userData: ", this.userData)
+        //console.log("userData: ", this.userData)
     }
 }
 

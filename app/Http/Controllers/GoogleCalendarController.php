@@ -58,6 +58,7 @@ class GoogleCalendarController extends Controller
             ]);
 
             $event= $this->service->events->insert($this->calendarId, $event);
+            
             $updateTable = $this->taskService->insertGoogleCalendarId([
                 'id' => $eventData['taskId'],
                 'google_calendar_id' => $event['id'],
@@ -82,7 +83,7 @@ class GoogleCalendarController extends Controller
     }
 
     public function updateEvent(Request $request) {
-        logger('controller calendar updateEvent');
+        logger('controller calendar updateEvent', [$request->input('eventData')]);
 
         try {
             $eventData= $request->input('eventData');
@@ -90,9 +91,11 @@ class GoogleCalendarController extends Controller
             $start= new EventDateTime();
             $start->setDateTime($eventData['start']['dateTime']);
             $start->setTimeZone($eventData['start']['timeZone']);
+            logger('dataStart: ', [$start]);
             $end= new EventDateTime();
             $end->setDateTime($eventData['end']['dateTime']);
             $end->setTimeZone($eventData['end']['timeZone']);
+            logger('dataEnd: ', [$end]);
 
             $event= $this->service->events->get($this->calendarId, $eventData['id']);
             $event->setSummary($eventData['summary']);
@@ -123,9 +126,11 @@ class GoogleCalendarController extends Controller
         
         try {
             $eventData= $request->input('eventData');
+
+            //dd($eventData[]);
             
-            $response= $this->service->events->delete($this->calendarId, $eventData['id']);
-            $removeGoogleId= $this->taskService->removeGoogleCalendarId($eventData['id']);
+            $response= $this->service->events->delete($this->calendarId, $eventData['google_calendar_id']);
+            $removeGoogleId= $this->taskService->removeGoogleCalendarId($eventData['google_calendar_id']);
 
             return response()->json([
                 'success'=> true,
@@ -137,7 +142,6 @@ class GoogleCalendarController extends Controller
             return response()->json([
                 'success'=> false,
                 'message'=> 'Erro ao tentar deletar o evento',
-                'data'=> null,
                 'error'=> $e->getMessage()
             ]);
         }

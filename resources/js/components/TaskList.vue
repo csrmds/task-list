@@ -1,8 +1,15 @@
 <template>
 
+    <v-row class="bg-teal-lighten-5">
+        <v-col cols="9">
+            <v-text-field v-model="search" label="Filtro" variant="underlined" hide-details single-line class="px-4 bg-teal-lighten-5" />
+        </v-col>
+        <v-col class="d-flex justify-center">
+            <v-switch v-model="filterConcluidas" @change="getList()" label="Concluidas" color="primary" class="bg-teal-lighten-5" hide-details></v-switch>
+        </v-col>
+    </v-row>
 
-    <v-text-field v-model="search" label="Filtro" variant="underlined" hide-details single-line
-        class="px-4 bg-teal-lighten-5" />
+    
 
 
     <v-data-table :items="taskList" :headers="dataTableHeaders" :items-per-page="dataTableItemsPerPage" :search="search"
@@ -55,8 +62,8 @@
             
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn @click="destroy(selectedTask.id)" >Sim</v-btn>
-                <v-btn @click="deleteConfirmView= false" >Não</v-btn>
+                <v-btn @click="deleteConfirmView= false" variant="outlined" color="blue-darken-2" >Não</v-btn>
+                <v-btn @click="destroy(selectedTask)" variant="flat" color="blue-darken-2" >Sim</v-btn>
             </v-card-actions>
         </v-card>
         
@@ -72,9 +79,12 @@
 import { format, parse } from 'date-fns'
 import iconEnable from '@/assets/gcalendar.svg'
 import iconDisabled from '@/assets/gcalendar_disabled.svg'
+import axios from 'axios';
 
 export default {
     name: 'task-list',
+
+    props: { userData: Object },
 
     data() {
         return {
@@ -102,21 +112,32 @@ export default {
             ],
             iconEnable,
             iconDisabled,
-            calendarIcon: true
+            calendarIcon: true,
+            filterConcluidas: false
         };
     },
 
     methods: {
         async getList() {
-
+            console.log("getList, filterconcluidas: ", this.filterConcluidas)
             try {
-                const response = await axios.get('/task/list')
+                var response= ''
+                if (this.filterConcluidas== false) {
+                    response = await axios.get('/task/list', {
+                        params: { concluidas: true }
+                    })
+                } else {
+                    response = await axios.get('/task/list')    
+                }
+                
                 response.data.success ? this.taskList= response.data.data : false
+                console.log("getList response: ", response.data)
             } catch (error) {
                 console.error("Erro ao listar tarefas: ", error);
             }
 
         },
+
 
         async edit(id) {
             const params = new URLSearchParams({ id })
@@ -126,12 +147,27 @@ export default {
 
         },
 
-        async destroy(id) {
-            const params = new URLSearchParams({ id })
-            const response = await fetch('/task/destroy?' + params.toString());
-            await response.json()
-            this.deleteConfirmView= false
-            //console.log("resposta: ", data)
+        async destroy(param) {
+            const taskData = new URLSearchParams({ taskData: JSON.stringify(param) })
+            console.log('destroy taskData URLSearchParams: ', taskData)
+
+            try {
+                console.log("param: ", param)
+                if (param.google_calendar_id) {
+                    console.log("if taskData.google_id", param)
+                    const responseGoogle = await axios.post(`/gcalendar/deleteevent/`, {eventData: param});
+                    console.log("googleCalendar destroy response: ", responseGoogle )
+                }
+
+                const response = await fetch(`/task/destroy?${taskData.toString()}`);
+                const data= await response.json()
+                this.deleteConfirmView= false
+                console.log("resposta destroy: ", data)
+            } catch(error) {
+                console.error("Erro ao deletar tarefa: ", error)
+            }
+
+            
             this.cleanSelectedTask()
             this.getList()
         },

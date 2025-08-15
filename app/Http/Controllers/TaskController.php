@@ -18,19 +18,19 @@ class TaskController extends Controller
         $this->task= new Task;
     }
 
-    public function teste(Request $request) {
-        $user= Auth::user();
+    // public function teste(Request $request) {
+    //     $user= Auth::user();
         
-        $client= new Google_Client();
-        $client->setAccessToken($user->access_token);
+    //     $client= new Google_Client();
+    //     $client->setAccessToken($user->access_token);
         
-        $service= new Google_Service_Calendar($client);
+    //     $service= new Google_Service_Calendar($client);
 
-        $calendarList= $service->calendarList->listCalendarList();
+    //     $calendarList= $service->calendarList->listCalendarList();
         
-        return response(json_encode($calendarList));
+    //     return response(json_encode($calendarList));
 
-    }
+    // }
 
     /**
      * Display a listing of the resource.
@@ -44,10 +44,18 @@ class TaskController extends Controller
 
     public function getTasks(Request $request) {
 
+        logger("getTasks resquest: ", $request->all());
+
         try {
             $userData= Auth::user();
+            $filtroConcluidas= $request->query('concluidas') || false;
 
-            $tasks= Task::where('user_id', $userData['id'])->orderBy('agenda_inicio')->get();
+            $query= Task::where('user_id', $userData['id']);
+
+            $tasks= $query->when($filtroConcluidas, function($query) {
+                return $query->where('status', '!=', 'concluido');
+            })
+            ->orderBy('agenda_inicio')->get();
 
             return response()->json([
                 'success'=> true,
@@ -102,9 +110,17 @@ class TaskController extends Controller
 
         try {
             $this->task->save();
-            return response(json_encode($this->task));
+            return response()->json([
+                'success'=> true,
+                'message'=> 'Tarefa criada com sucesso',
+                'data'=> $this->task
+            ]);
         } catch(\Exception $e) {
-            return response(json_encode($e->getMessage()));
+            return response()->json([
+                'success'=> false,
+                'message'=> 'Erro ao criar a tarefa',
+                'error'=> $e->getMessage()
+            ]);
         }
     }
 
@@ -139,9 +155,17 @@ class TaskController extends Controller
             $task->tags= $taskData['tags'];
 
             $task->save();
-            return response(json_encode($task));
+            return response()->json([
+                'success'=> true,
+                'message'=> 'Tarefa atualizada com sucesso',
+                'data'=> $task
+            ]);
         } catch (\Exception $e) {
-            return response(json_encode($e->getMessage()));
+            return response()->json([
+                'success'=> false,
+                'message'=> 'Erro ao atualizar a tarefa',
+                'error'=> $e->getMessage()
+            ]);
         }
     }
 
@@ -150,14 +174,24 @@ class TaskController extends Controller
      */
     public function destroy(Request $request)
     {
-        //logger("destroy request: ", $request->all());
+        logger("destroy request: ", [$request->query()]);
+
+        $task= json_decode($request->query('taskData'));
 
         try {
-            $id= $request->input('id');
+            $id= $task->id;
             $deleted= Task::destroy($id);
-            return response(json_encode($deleted));
+            return response()->json([
+                'success'=> true,
+                'message'=> 'Tarefa deletada com sucesso',
+                'data'=> $deleted
+            ]);
         } catch(\Exception $e) {
-            return response(json_encode($e->getMessage()));
+            return response()->json([
+                'success'=> false,
+                'message'=> 'Erro ao deletar a tarefa',
+                'error'=> $e->getMessage()
+            ]);
         }
 
     }
