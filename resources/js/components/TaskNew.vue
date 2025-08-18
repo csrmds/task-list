@@ -352,9 +352,7 @@ export default {
     },
 
     mounted() {
-        //console.log("mounted, userData: ", this.userData)
-        // const resp = this.isGoogleAccount
-        // console.log("resp googleaccount", resp)
+
     },
 
     watch: {

@@ -21,14 +21,14 @@
             </v-card-item>
 
 
-            <v-card-actions class="justify-center mt-6">
+            <v-card-actions class="mt-6">
 
                 <v-row class="">
                     <v-col cols="6" class="d-flex justify-center">
-                        <v-btn @click="submitLogin()" width="100%" height="40" variant="tonal">Login</v-btn>
+                        <v-btn @click="submitLogin()" width="100%" max-width="200px" height="40" variant="tonal">Login</v-btn>
                     </v-col>
 
-                    <v-col cols="6">
+                    <v-col cols="6" class="d-flex justify-center">
                         <button class="gsi-material-button" type="button">
                             <div class="gsi-material-button-state"></div>
                             <div class="gsi-material-button-content-wrapper"

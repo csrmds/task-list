@@ -5,7 +5,12 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 
 Route::get('/', function () {
-    return view('home');
+    if (Auth::check()) {
+        return view('home');
+    } else {
+        return view('login');
+    }
+    
 });
 
 Route::get('/login', function () {
