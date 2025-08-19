@@ -17,15 +17,6 @@ class UserController extends Controller {
     }
 
 
-    public function getUserById(Request $request) {
-
-    }
-
-    public function getUsers(Request $request) {
-
-    }
-
-
     public function setUser($data) {
         if ($data['google_id']==null) {
             $this->user->name= $data['name'];
@@ -43,9 +34,7 @@ class UserController extends Controller {
     }
 
     public function store(Request $request) {
-        logger("store user request: ", $request->all());
-
-
+        
         try {
             $userData= $request->input('userData');
             $this->setUser($userData);
@@ -60,7 +49,6 @@ class UserController extends Controller {
             return response()->json([
                 'success'=> false,
                 'message'=> 'Erro ao tentar salvar a conta de usuário',
-                'data'=> null,
                 'error'=> $e->getMessage()
             ]);
         }
@@ -163,14 +151,5 @@ class UserController extends Controller {
         }
 
     }
-
-    public function update(Request $request) {
-
-    }
-
-    public function destroy(Request $request) {
-
-    }
-
 
 }

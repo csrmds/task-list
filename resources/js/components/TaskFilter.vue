@@ -1,9 +1,10 @@
 <template>
-
-    <v-row>
-        <v-text-field label="busca" variant="underlined"></v-text-field>
-    </v-row>
-
+  <v-row>
+    <v-text-field
+      label="busca"
+      variant="underlined"
+    />
+  </v-row>
 </template>
 
 <script>

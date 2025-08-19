@@ -1,86 +1,145 @@
 <template>
-
-    <v-card class="pa-4 bg-green-lighten-4">
-        <v-row>
-            <v-col>
-                <v-textarea 
-                    rows="1" 
-                    label="Nova Tarefa" 
-                    variant="underlined" 
-                    v-model="form.resumo"
-                    :error="!!errors.resumo"
-                    :error-messages="errors.resumo"
-                    >
-                </v-textarea>
-            </v-col>
-            <v-col cols="2" class="vertical-center justify-center">
-                <v-btn v-if="!loaderView" variant="tonal" class="w-100" @click="save()">Salvar</v-btn>
-                <v-progress-circular v-else="loaderView" color="green" indeterminate></v-progress-circular>
-            </v-col>
-        </v-row>
-
-
-        <v-row>
-            <v-col cols="2" align-self="center">
-                <v-text-field 
-                    label="Data" 
-                    variant="underlined" 
-                    v-model="form.agenda_data" 
-                    v-mask="'##/##/####'" 
-                    :error="!!errors.agenda_data"
-                    :error-messages="errors.agenda_data"
-                    autocomplete="off">
-
-                    <v-menu v-model="datePickerView" activator="parent" :close-on-content-click="false"
-                        id="dropdown-date">
-                        <v-card>
-                            <v-date-picker v-model="selectedDate" autocomplete="off"></v-date-picker>
-
-                            <v-card-actions>
-                                <v-btn text color="primary" @click="confirmDate">OK</v-btn>
-                                <v-btn text @click="cancelDate">Cancelar</v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-menu>
-
-                </v-text-field>
-            </v-col>
-
-            <v-col cols="2" align-self="center">
-                <v-combobox label="Hora" v-model="agenda_hora" :items="horaList" variant="underlined" v-mask="'##:##'" autocomplete="off" />
-            </v-col>
-
-            <v-col cols="2" align-self="center">
-                <v-select label="Status" :items="['A fazer', 'Em progresso', 'Concluido']" v-model="status" variant="underlined"></v-select>
-            </v-col>
-
-            <v-col 
-                v-if="isGoogleAccount"
-                cols="2" 
-                class="d-flex flex-column" >
-                <label>Google Calendar</label>
-                <div class="d-flex ga-1 flex-row justify-center" id="calendarDiv">
-                    <img :src="calendarIcon" width="24" >
-                    <v-checkbox v-model="googleCalendar" color="primary" id="v-checkbox-calendar"/>
-                </div>
-            </v-col>
-
-        </v-row>
-
-        <v-row>
-            <v-col>
-                <v-expand-transition>
-                    <v-textarea rows="2" label="Detalhes" v-show="detalhesView" v-model="descricao"></v-textarea>
-                </v-expand-transition>
-
-            </v-col>
-        </v-row>
+  <v-card class="pa-4 bg-green-lighten-4">
+    <v-row>
+      <v-col>
+        <v-textarea 
+          v-model="form.resumo" 
+          rows="1" 
+          label="Nova Tarefa" 
+          variant="underlined"
+          :error="!!errors.resumo"
+          :error-messages="errors.resumo"
+        />
+      </v-col>
+      <v-col
+        cols="2"
+        class="vertical-center justify-center"
+      >
+        <v-btn
+          v-if="!loaderView"
+          variant="tonal"
+          class="w-100"
+          @click="save()"
+        >
+          Salvar
+        </v-btn>
+        <v-progress-circular
+          v-else-if="loaderView"
+          color="green"
+          indeterminate
+        />
+      </v-col>
+    </v-row>
 
 
+    <v-row>
+      <v-col
+        cols="2"
+        align-self="center"
+      >
+        <v-text-field 
+          v-model="form.agenda_data" 
+          v-mask="'##/##/####'" 
+          label="Data" 
+          variant="underlined" 
+          :error="!!errors.agenda_data"
+          :error-messages="errors.agenda_data"
+          autocomplete="off"
+        >
+          <v-menu
+            id="dropdown-date"
+            v-model="datePickerView"
+            activator="parent"
+            :close-on-content-click="false"
+          >
+            <v-card>
+              <v-date-picker
+                v-model="selectedDate"
+                autocomplete="off"
+              />
 
+              <v-card-actions>
+                <v-btn
+                  text
+                  color="primary"
+                  @click="confirmDate"
+                >
+                  OK
+                </v-btn>
+                <v-btn
+                  text
+                  @click="cancelDate"
+                >
+                  Cancelar
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-menu>
+        </v-text-field>
+      </v-col>
 
-    </v-card>
+      <v-col
+        cols="2"
+        align-self="center"
+      >
+        <v-combobox
+          v-model="agenda_hora"
+          v-mask="'##:##'"
+          label="Hora"
+          :items="horaList"
+          variant="underlined"
+          autocomplete="off"
+        />
+      </v-col>
 
+      <v-col
+        cols="2"
+        align-self="center"
+      >
+        <v-select
+          v-model="status"
+          label="Status"
+          :items="['A fazer', 'Em progresso', 'Concluido']"
+          variant="underlined"
+        />
+      </v-col>
+
+      <v-col 
+        v-if="isGoogleAccount"
+        cols="2" 
+        class="d-flex flex-column"
+      >
+        <label>Google Calendar</label>
+        <div
+          id="calendarDiv"
+          class="d-flex ga-1 flex-row justify-center"
+        >
+          <img
+            :src="calendarIcon"
+            width="24"
+          >
+          <v-checkbox
+            id="v-checkbox-calendar"
+            v-model="googleCalendar"
+            color="primary"
+          />
+        </div>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-expand-transition>
+          <v-textarea
+            v-show="detalhesView"
+            v-model="descricao"
+            rows="2"
+            label="Detalhes"
+          />
+        </v-expand-transition>
+      </v-col>
+    </v-row>
+  </v-card>
 </template>
 
 <script>
@@ -94,7 +153,12 @@ import { reactive } from 'vue'
 export default {
     name: 'TaskNew',
 
-    props: { userData: Object },
+    props: { 
+      userData: {
+          type: Object,
+          default: ()=> ({})
+        }
+    },
 
     data() {
         return {
@@ -118,7 +182,7 @@ export default {
             googleCalendar: false,
             iconEnable,
             iconDisabled,
-            calendarIcon: this.googleCalendar,
+            // calendarIcon: this.googleCalendar,
             loaderView: false,
             horaList: [
                 "06:00",
@@ -163,6 +227,33 @@ export default {
             })
 
         };
+    },
+
+
+
+    computed: {
+        calendarIcon() {
+            return this.googleCalendar ? this.iconEnable : this.iconDisabled
+        },
+
+        isGoogleAccount() {
+            if (this.userData.google_id) {
+                return true
+            } else {
+                return false
+            }
+        }
+    },
+
+    watch: {
+        googleCalendar(newValue) {
+            
+            if (newValue === false) this.errors.agenda_data= ''
+        }
+    },
+
+    mounted() {
+
     },
 
     methods: {
@@ -333,33 +424,6 @@ export default {
             }
         },
 
-    },
-
-
-
-    computed: {
-        calendarIcon() {
-            return this.googleCalendar ? this.iconEnable : this.iconDisabled
-        },
-
-        isGoogleAccount() {
-            if (this.userData.google_id) {
-                return true
-            } else {
-                return false
-            }
-        }
-    },
-
-    mounted() {
-
-    },
-
-    watch: {
-        googleCalendar(newValue, oldValue) {
-            
-            if (newValue === false) this.errors.agenda_data= ''
-        }
     }
 };
 </script>

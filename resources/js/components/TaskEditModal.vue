@@ -1,92 +1,157 @@
 <template>
-    <v-dialog v-model="modalView">
-        <v-card class="bg-green-lighten-4">
-            <v-card-title class="d-flex justify-space-between align-center">
-                <div class="text-h6 text-medium-emphasis ps-2">Edição de tarefa</div>
-                <v-btn icon="mdi-close" variant="text" @click="modalView= false"></v-btn>
-            </v-card-title>
+  <v-dialog v-model="modalView">
+    <v-card class="bg-green-lighten-4">
+      <v-card-title class="d-flex justify-space-between align-center">
+        <div class="text-h6 text-medium-emphasis ps-2">
+          Edição de tarefa
+        </div>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          @click="modalView= false"
+        />
+      </v-card-title>
 
 
-            <v-row class="mx-3">
-                <v-col>
-                    <v-textarea 
-                        rows="1" 
-                        variant="underlined" 
-                        v-model="form.resumo"
-                        :error="!!errors.resumo"
-                        :error-messages="errors.resumo"
-                        ></v-textarea>
-                </v-col>
-            </v-row>
+      <v-row class="mx-3">
+        <v-col>
+          <v-textarea 
+            v-model="form.resumo" 
+            rows="1" 
+            variant="underlined"
+            :error="!!errors.resumo"
+            :error-messages="errors.resumo"
+          />
+        </v-col>
+      </v-row>
 
 
 
-            <v-card-actions class="ma-4">
-                <v-row>
-                    <v-col cols="2" align-self="center">
+      <v-card-actions class="ma-4">
+        <v-row>
+          <v-col
+            cols="2"
+            align-self="center"
+          >
+            <v-text-field 
+              v-model="form.agenda_data" 
+              v-mask="'##/##/####'" 
+              label="Data"
+              variant="underlined"
+              :error="!!errors.agenda_data"
+              :error-messages="errors.agenda_data"
+              autocomplete="off"
+            >
+              <v-menu
+                id="dropdown-date"
+                v-model="datePickerView"
+                activator="parent"
+                :close-on-content-click="false"
+              >
+                <v-card>
+                  <v-date-picker
+                    v-model="selectedDate"
+                    autocomplete="off"
+                  />
 
-                        <v-text-field 
-                            label="Data" 
-                            variant="underlined" 
-                            v-model="form.agenda_data"
-                            v-mask="'##/##/####'"
-                            :error="!!errors.agenda_data"
-                            :error-messages="errors.agenda_data"
-                            autocomplete="off"
-                            >
+                  <v-card-actions>
+                    <v-btn
+                      text
+                      color="primary"
+                      @click="confirmDate"
+                    >
+                      OK
+                    </v-btn>
+                    <v-btn
+                      text
+                      @click="cancelDate"
+                    >
+                      Cancelar
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-menu>
+            </v-text-field>
+          </v-col>
 
-                            <v-menu v-model="datePickerView" activator="parent" :close-on-content-click="false"
-                                id="dropdown-date">
-                                <v-card>
-                                    <v-date-picker v-model="selectedDate" autocomplete="off"></v-date-picker>
+          <v-col
+            cols="2"
+            align-self="center"
+          >
+            <v-combobox
+              v-model="agenda_hora"
+              v-mask="'##:##'"
+              label="Horário"
+              :items="horaList"
+              variant="underlined"
+              autocomplete="off"
+            />
+          </v-col>
 
-                                    <v-card-actions>
-                                        <v-btn text color="primary" @click="confirmDate">OK</v-btn>
-                                        <v-btn text @click="cancelDate">Cancelar</v-btn>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-menu>
+          <v-col
+            cols="2"
+            align-self="center"
+          >
+            <v-select
+              v-model="status"
+              label="Status"
+              :items="['A fazer', 'Em progresso', 'Concluido']"
+              variant="underlined"
+            />
+          </v-col>
 
-                        </v-text-field>
+          <v-col
+            cols="2"
+            class="d-flex flex-column vertical-center"
+          >
+            <div v-if="isGoogleAccount">
+              <label>Google Calendar</label>
+              <div class="d-flex ga-1 flex-row justify-center">
+                <img
+                  :src="calendarIcon"
+                  width="24"
+                >
+                <v-checkbox
+                  id="v-checkbox-calendar"
+                  v-model="googleCalendar"
+                  color="primary"
+                />
+              </div>
+            </div>
+          </v-col>
 
-                    </v-col>
+          <v-col
+            cols="2"
+            align-self="center"
+            class="d-flex justify-center ga-2 "
+          >
+            <!-- <p>ID: {{ google_calendar_id }}</p> -->
+          </v-col>
 
-                    <v-col cols="2" align-self="center">
-                        <v-combobox label="Horário" v-model="agenda_hora" :items="horaList" variant="underlined"
-                            v-mask="'##:##'" autocomplete="off">
-                        </v-combobox>
-                    </v-col>
-
-                    <v-col cols="2" align-self="center">
-                        <v-select label="Status" :items="['A fazer', 'Em progresso', 'Concluido']" v-model="status"
-                            variant="underlined">
-                        </v-select>
-                    </v-col>
-
-                    <v-col cols="2" class="d-flex flex-column vertical-center">
-                        <div v-if="isGoogleAccount">
-                            <label>Google Calendar</label>
-                            <div class="d-flex ga-1 flex-row justify-center">
-                                <img :src="calendarIcon" width="24">
-                                <v-checkbox v-model="googleCalendar" color="primary" id="v-checkbox-calendar" />
-                            </div>
-                        </div>
-                    </v-col>
-
-                    <v-col cols="2" align-self="center" class="d-flex justify-center ga-2 ">
-                        <!-- <p>ID: {{ google_calendar_id }}</p> -->
-                    </v-col>
-
-                    <v-col cols="2" align-self="center" class="d-flex justify-center ga-2 ">
-                        <v-btn v-if="!loaderView" variant="tonal" class="w-100" @click="save()">Salvar</v-btn>
-                        <v-progress-circular v-else="loaderView" color="green" indeterminate></v-progress-circular>
-                    </v-col>
-
-                </v-row>
-
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+          <v-col
+            cols="2"
+            align-self="center"
+            class="d-flex justify-center ga-2 "
+          >
+            <v-btn
+              v-if="!loaderView"
+              variant="tonal"
+              class="w-100"
+              @click="save()"
+            >
+              Salvar
+            </v-btn>
+            <v-progress-circular
+              v-else
+              loaderView
+              color="green"
+              indeterminate
+            />
+          </v-col>
+        </v-row>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -100,8 +165,14 @@ import { reactive } from 'vue'
 export default {
     name: 'TaskEditModal',
     props: {
-        taskData: {},
-        userData: Object
+        taskData: {
+          type: Object,
+          default: ()=> ({})
+        },
+        userData: {
+          type: Object,
+          default: ()=> ({})
+        }
     },
     data() {
         return {
@@ -122,7 +193,7 @@ export default {
             googleCalendar: false,
             iconEnable,
             iconDisabled,
-            calendarIcon: this.googleCalendar,
+            // calendarIcon: this.googleCalendar,
             selectedDate: null,
             formattedDate: null,
             datePickerView: false,
@@ -170,6 +241,48 @@ export default {
                 agenda_data: yup.string().required('Defina uma data para a tarefa')
             })
         }
+    },
+    
+    computed: {
+        calendarIcon() {
+            return this.googleCalendar ? this.iconEnable : this.iconDisabled
+        },
+
+        isGoogleAccount() {
+            if (this.userData.google_id) {
+                return true
+            } else {
+                return false
+            }
+        }
+    },
+
+    watch: {
+        taskData: {
+            handler(newVal) {
+                console.log("watch newVal: ", newVal)
+                this.id= newVal?.id,
+                this.form.resumo= newVal?.resumo || '',
+                this.descricao= newVal?.descricao || '';
+                if (newVal.agenda_inicio) { 
+                    this.form.agenda_data= format(newVal?.agenda_inicio, 'dd/MM/yyyy') 
+                    this.agenda_hora= format(newVal?.agenda_inicio, 'HH:mm')
+                } else {
+                    this.form.agenda_data= '',
+                    this.agenda_hora= ''
+                };
+                this.status= newVal?.status || 'A fazer',
+                this.tags= newVal?.tags || '',
+                this.agenda_fim= newVal?.agenda_fim || null,
+                this.google_calendar_id= newVal?.google_calendar_id || null,
+                this.google_calendar_link= newVal?.google_calendar_link || null,
+                this.googleCalendar= this.google_calendar_id ? true : false
+            }
+        }
+    },
+
+    mounted() {
+        
     },
 
     methods: {
@@ -402,48 +515,6 @@ export default {
             }
         }
         
-    },
-
-    mounted() {
-        
-    },
-    
-    computed: {
-        calendarIcon() {
-            return this.googleCalendar ? this.iconEnable : this.iconDisabled
-        },
-
-        isGoogleAccount() {
-            if (this.userData.google_id) {
-                return true
-            } else {
-                return false
-            }
-        }
-    },
-
-    watch: {
-        taskData: {
-            handler(newVal) {
-                console.log("watch newVal: ", newVal)
-                this.id= newVal?.id,
-                this.form.resumo= newVal?.resumo || '',
-                this.descricao= newVal?.descricao || '';
-                if (newVal.agenda_inicio) { 
-                    this.form.agenda_data= format(newVal?.agenda_inicio, 'dd/MM/yyyy') 
-                    this.agenda_hora= format(newVal?.agenda_inicio, 'HH:mm')
-                } else {
-                    this.form.agenda_data= '',
-                    this.agenda_hora= ''
-                };
-                this.status= newVal?.status || 'A fazer',
-                this.tags= newVal?.tags || '',
-                this.agenda_fim= newVal?.agenda_fim || null,
-                this.google_calendar_id= newVal?.google_calendar_id || null,
-                this.google_calendar_link= newVal?.google_calendar_link || null,
-                this.googleCalendar= this.google_calendar_id ? true : false
-            }
-        }
     }
 
 

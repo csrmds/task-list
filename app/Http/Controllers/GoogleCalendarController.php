@@ -31,21 +31,7 @@ class GoogleCalendarController extends Controller
 
     }
 
-    public function listEvents() {
-        $params= [
-            'timeMin'=> now()->toRfc3339String(),
-            'timeMax'=> now()->addDays(30)->toRfc3339String(),
-            'singleEvents' => true,
-            'orderBy' => 'startTime',
-        ];
-
-        $events= $this->service->events->listEvents($this->calendarId, $params);
-
-        return response(json_encode($events));
-    }
-
     public function createEvent(Request $request) {
-        logger('Google Calendar Controller createEvent', [$request->input('eventData')]);
 
         try {
             $eventData= $request->input('eventData');
@@ -65,8 +51,6 @@ class GoogleCalendarController extends Controller
                 'google_calendar_link' => $event['htmlLink'],
             ]);
 
-            logger('createEvent insert response: ', [$event]);
-
             return response()->json([
                 'success'=> true,
                 'message'=> 'Evento criado com sucesso',
@@ -83,7 +67,6 @@ class GoogleCalendarController extends Controller
     }
 
     public function updateEvent(Request $request) {
-        logger('controller calendar updateEvent', [$request->input('eventData')]);
 
         try {
             $eventData= $request->input('eventData');
@@ -91,11 +74,10 @@ class GoogleCalendarController extends Controller
             $start= new EventDateTime();
             $start->setDateTime($eventData['start']['dateTime']);
             $start->setTimeZone($eventData['start']['timeZone']);
-            logger('dataStart: ', [$start]);
+            
             $end= new EventDateTime();
             $end->setDateTime($eventData['end']['dateTime']);
             $end->setTimeZone($eventData['end']['timeZone']);
-            logger('dataEnd: ', [$end]);
 
             $event= $this->service->events->get($this->calendarId, $eventData['id']);
             $event->setSummary($eventData['summary']);
@@ -122,12 +104,9 @@ class GoogleCalendarController extends Controller
     }
 
     public function deleteEvent(Request $request) {
-        logger("calendar controller deleteEvent: ", [$request->input('eventData')]);
         
         try {
             $eventData= $request->input('eventData');
-
-            //dd($eventData[]);
             
             $response= $this->service->events->delete($this->calendarId, $eventData['google_calendar_id']);
             $removeGoogleId= $this->taskService->removeGoogleCalendarId($eventData['google_calendar_id']);

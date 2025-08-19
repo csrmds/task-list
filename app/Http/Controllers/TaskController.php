@@ -18,20 +18,6 @@ class TaskController extends Controller
         $this->task= new Task;
     }
 
-    // public function teste(Request $request) {
-    //     $user= Auth::user();
-        
-    //     $client= new Google_Client();
-    //     $client->setAccessToken($user->access_token);
-        
-    //     $service= new Google_Service_Calendar($client);
-
-    //     $calendarList= $service->calendarList->listCalendarList();
-        
-    //     return response(json_encode($calendarList));
-
-    // }
-
     /**
      * Display a listing of the resource.
      */
@@ -43,8 +29,6 @@ class TaskController extends Controller
     }
 
     public function getTasks(Request $request) {
-
-        logger("getTasks resquest: ", $request->all());
 
         try {
             $userData= Auth::user();
@@ -69,21 +53,10 @@ class TaskController extends Controller
             ]);
         }
 
-        $tasks= Task::all();
-        return response(json_encode($tasks));
-    }
-
-    public function getById(Request $request) {
-        logger("getById request: ", $request->all());
-        $id= $request->input('id');
-        $task= Task::find($id);
-
-        return response()->json($task);
     }
 
     protected function setTask($data) {
         $user= Auth::user();
-        logger("setTask user: ", [$user]);
 
         $this->task->resumo= $data['resumo'];
         $this->task->descricao= $data['descricao'];
@@ -103,12 +76,9 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        logger("store request: ", $request->input('taskData'));
-
-        //return false;
-        $this->setTask($request->input('taskData'));
 
         try {
+            $this->setTask($request->input('taskData'));
             $this->task->save();
             return response()->json([
                 'success'=> true,
@@ -125,20 +95,10 @@ class TaskController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request)
     {
-
-        logger("Task Controller Update request: ", $request->input('taskData'));
 
         try {
             $taskData= $request->input('taskData');
@@ -174,11 +134,9 @@ class TaskController extends Controller
      */
     public function destroy(Request $request)
     {
-        logger("destroy request: ", [$request->query()]);
-
-        $task= json_decode($request->query('taskData'));
 
         try {
+            $task= json_decode($request->query('taskData'));
             $id= $task->id;
             $deleted= Task::destroy($id);
             return response()->json([
