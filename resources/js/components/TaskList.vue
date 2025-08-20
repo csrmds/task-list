@@ -184,7 +184,6 @@ export default {
 
     methods: {
         async getList() {
-            console.log("getList, filterconcluidas: ", this.filterConcluidas)
             try {
                 var response= ''
                 if (this.filterConcluidas== false) {
@@ -196,7 +195,6 @@ export default {
                 }
                 
                 response.data.success ? this.taskList= response.data.data : false
-                console.log("getList response: ", response.data)
             } catch (error) {
                 console.error("Erro ao listar tarefas: ", error);
             }
@@ -214,20 +212,15 @@ export default {
 
         async destroy(param) {
             const taskData = new URLSearchParams({ taskData: JSON.stringify(param) })
-            console.log('destroy taskData URLSearchParams: ', taskData)
 
             try {
-                console.log("param: ", param)
                 if (param.google_calendar_id) {
-                    console.log("if taskData.google_id", param)
                     const responseGoogle = await axios.post(`/gcalendar/deleteevent/`, {eventData: param});
-                    console.log("googleCalendar destroy response: ", responseGoogle )
                 }
 
                 const response = await fetch(`/task/destroy?${taskData.toString()}`);
                 const data= await response.json()
                 this.deleteConfirmView= false
-                console.log("resposta destroy: ", data)
             } catch(error) {
                 console.error("Erro ao deletar tarefa: ", error)
             }
@@ -248,8 +241,6 @@ export default {
 
             try {
                 const dateTime = parse(param, "yyyy-MM-dd HH:mm:ss", new Date())
-                //const interval = intervalToDuration({ start: Date.now(), end: dateTime })
-                
 
                 return format(dateTime, "dd/MM/yy") + " às " + format(dateTime, "HH:mm")
 
@@ -259,7 +250,6 @@ export default {
         },
 
         callEditModal(param) {
-            //console.log("TaskList $emit callEditModal param: ", param)
             this.$emit('callEditModal', param)
         }
     }

@@ -176,18 +176,14 @@ const submitLogin = async() => {
             loaderView.value= false
             window.location.href= '/'
         } else {
-            console.error(response.data.message)
             loaderView.value= false
             alertErrorView.value= true
             alertErrorMessage.value= response.data.message
         }
 
     } catch(err) {
-        console.log('errors: ', errors)
-        console.log("Error trycatch: ", err)
         if (err.inner) {
             err.inner.forEach(e=> {
-                console.log('path / message: ', e.path, ': ', e.message)
                 errors[e.path]= e.message
             })
         } else {

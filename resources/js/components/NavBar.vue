@@ -49,19 +49,6 @@ export default {
         }
     },
 
-    data() {
-        return {
-
-        }
-    },
-
-    mounted() {
-        //console.log("userData: ", this.userData)
-    },
-
-    methods: {
-
-    }
 }
 
 </script>

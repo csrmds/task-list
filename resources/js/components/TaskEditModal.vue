@@ -178,13 +178,9 @@ export default {
         return {
             id: null,
             resumo: null,
-            descricao: null,
             agenda_inicio: null,
             agenda_data: null,
             agenda_hora: null,
-            agenda_fim: null,
-            responsavel: null,
-            tags: null,
             status: null,
             google_calendar_id: null,
             google_calendar_link: null,
@@ -193,7 +189,6 @@ export default {
             googleCalendar: false,
             iconEnable,
             iconDisabled,
-            // calendarIcon: this.googleCalendar,
             selectedDate: null,
             formattedDate: null,
             datePickerView: false,
@@ -260,7 +255,6 @@ export default {
     watch: {
         taskData: {
             handler(newVal) {
-                console.log("watch newVal: ", newVal)
                 this.id= newVal?.id,
                 this.form.resumo= newVal?.resumo || '',
                 this.descricao= newVal?.descricao || '';
@@ -272,8 +266,6 @@ export default {
                     this.agenda_hora= ''
                 };
                 this.status= newVal?.status || 'A fazer',
-                this.tags= newVal?.tags || '',
-                this.agenda_fim= newVal?.agenda_fim || null,
                 this.google_calendar_id= newVal?.google_calendar_id || null,
                 this.google_calendar_link= newVal?.google_calendar_link || null,
                 this.googleCalendar= this.google_calendar_id ? true : false
@@ -305,8 +297,6 @@ export default {
             this.agenda_inicio= null,
             this.form.agenda_data= null,
             this.agenda_hora= null,
-            this.agenda_fim= null,
-            this.responsavel= null,
             this.status= "A fazer",
             this.formattedDate= null,
             this.loaderView= false
@@ -330,10 +320,8 @@ export default {
                     const [d, M, y]= (this.form.agenda_data).split('/')
                     const [h, m, s]= (this.agenda_hora || "00:00:03").split(':')
                     dataStart= new Date(y, M-1, d, h, m)
-                    //console.log('dataStart: ', dataStart)
                     dataEnd= new Date(y, M-1, d, h, m)
                     dataEnd.setHours(dataEnd.getHours()+1)
-                    //console.log('dataEnd: ', dataEnd)
                 }
 
                 const eventData= {
@@ -351,16 +339,12 @@ export default {
                 }
 
                 const response= await axios.post('/gcalendar/createevent', {eventData: eventData})
-
-                console.log('createGoogleEvent response.data: ', response.data)
-
                 return response.data
                 
             } catch (error) {
                 this.loaderView= false
                 if (error.inner) {
                     error.inner.forEach(e=> {
-                        console.log('path / message: ', e.path, ': ', e.message)
                         this.errors[e.path]= e.message
                     })
                 }
@@ -383,10 +367,8 @@ export default {
                     const [d, M, y]= (this.form.agenda_data).split('/')
                     const [h, m, s]= (this.agenda_hora || "00:00:03").split(':')
                     dataStart= new Date(y, M-1, d, h, m)
-                    //console.log('dataStart: ', dataStart)
                     dataEnd= new Date(y, M-1, d, h, m)
                     dataEnd.setHours(dataEnd.getHours()+1)
-                    //console.log('dataEnd: ', dataEnd)
                 }
 
                 const eventData= {
@@ -404,16 +386,12 @@ export default {
                 }
 
                 const response= await axios.post('/gcalendar/updateevent', {eventData: eventData})
-
-                console.log('updateGoogleEvent response.data: ', response.data)
-
                 return response.data
 
             } catch(error) {
                 this.loaderView= false
                 if (error.inner) {
                     error.inner.forEach(e=> {
-                        console.log('path / message: ', e.path, ': ', e.message)
                         this.errors[e.path]= e.message
                     })
                 }
@@ -428,15 +406,10 @@ export default {
 
         
         async deleteGoogleEvent() {
-            console.log('deleteGoogleEvent google_calendar_id: ', this.google_calendar_id)
 
             try {
-                const eventData= {
-                    google_calendar_id: this.google_calendar_id
-                }
-
+                const eventData= { google_calendar_id: this.google_calendar_id }
                 const response= await axios.post('/gcalendar/deleteevent', {eventData: eventData})
-                console.log('deleteGoogleEvent response.data', response.data)
 
                 return response.data
             } catch(error) {
@@ -462,7 +435,6 @@ export default {
                 this.deleteGoogleEvent()
             }
 
-            //console.log("formattedDate: ", this.form.agenda_data)
             if (this.form.agenda_data) {
                 const [d, M, y]= (this.form.agenda_data).split('/')
                 const [h, m]= (this.agenda_hora || "00:00").split(':')
@@ -475,10 +447,6 @@ export default {
                 resumo: this.form.resumo,
                 descricao: this.descricao,
                 agenda_inicio: this.agenda_inicio,
-                agenda_fim: this.agenda_fim,
-                responsavel: this.responsavel,
-                categoria: null,
-                tags: this.tags,
                 status: this.status,
                 google_calendar_id: this.google_calendar_id,
                 google_calendar_link: this.google_calendar_link,
@@ -498,7 +466,6 @@ export default {
                     body: JSON.stringify({ taskData: taskData })
                 })
 
-                console.log("response: ", await response.json())
                 this.cleanFields()
                 this.callRefreshTaskList()
                 this.modalView= false
@@ -508,7 +475,6 @@ export default {
                 this.loaderView= false
                 if (error.inner) {
                     error.inner.forEach(e=> {
-                        console.log('path / message: ', e.path, ': ', e.message)
                         this.errors[e.path]= e.message
                     })
                 }

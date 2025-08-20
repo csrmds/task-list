@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->string('last_name')->nullable()->after('name');
             $table->string('google_id')->nullable();
             $table->string('avatar')->nullable();
+            $table->string('access_token')->nullable();
+            $table->string('refresh_token')->nullable();
+            $table->string('token_expires_in')->nullable();
         });
     }
 

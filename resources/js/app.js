@@ -39,7 +39,6 @@ if (token) {
 // COMPONENTES
 // import Teste from './components/Teste.vue'
 import TaskNew from './components/TaskNew.vue'
-import TaskFilter from './components/TaskFilter.vue'
 import TaskList from './components/TaskList.vue'
 import TaskEditModal from './components/TaskEditModal.vue'
 import Home from './components/Home.vue'
@@ -54,7 +53,6 @@ app.use(VueTheMask)
 
 // app.component('teste', Teste)
 app.component('TaskNew', TaskNew)
-app.component('TaskFilter', TaskFilter)
 app.component('TaskList', TaskList)
 app.component('TaskEditModal', TaskEditModal)
 app.component('Home', Home)

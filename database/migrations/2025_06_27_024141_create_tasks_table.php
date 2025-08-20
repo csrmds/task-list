@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->string('descricao');
+            $table->string('resumo')->nullable();
             $table->dateTime('agenda_inicio')->nullable();
-            $table->dateTime('agenda_fim')->nullable();
             $table->string('status')->nullable();
-            $table->string('responsavel')->nullable();
-            $table->string('categoria')->nullable();
-            $table->string('tags')->nullable();
+            $table->string('google_calendar_id')->nullable();
+            $table->string('google_calendar_link')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

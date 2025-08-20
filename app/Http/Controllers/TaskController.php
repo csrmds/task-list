@@ -59,13 +59,8 @@ class TaskController extends Controller
         $user= Auth::user();
 
         $this->task->resumo= $data['resumo'];
-        $this->task->descricao= $data['descricao'];
         $this->task->agenda_inicio= $data['agenda_inicio'];
-        $this->task->agenda_fim= $data['agenda_fim'];
         $this->task->status= $data['status'];
-        $this->task->responsavel= $data['responsavel'];
-        $this->task->categoria= $data['categoria'];
-        $this->task->tags= $data['tags'];
         $this->task->google_calendar_id= $data['google_calendar_id'];
         $this->task->google_calendar_link= $data['google_calendar_link'];
         $this->task->user_id= $user['id'];
@@ -106,14 +101,9 @@ class TaskController extends Controller
             
             $task= Task::find($id);
             $task->resumo= $taskData['resumo'];
-            $task->descricao= $taskData['descricao'];
             $task->agenda_inicio= $taskData['agenda_inicio'];
-            $task->agenda_fim= $taskData['agenda_fim'];
             $task->status= $taskData['status'];
-            $task->responsavel= $taskData['responsavel'];
-            $task->categoria= $taskData['categoria'];
-            $task->tags= $taskData['tags'];
-
+            
             $task->save();
             return response()->json([
                 'success'=> true,
