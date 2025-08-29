@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
+import NodeGlobalsPolyfillPlugin from '@esbuild-plugins/node-globals-polyfill'
 import path from 'path'
 
 export default defineConfig({
@@ -13,6 +14,17 @@ export default defineConfig({
         tailwindcss(),
         vue()
     ],
+    optimizeDeps: {
+        esbuildOptions: {
+            define: { global: globalThis },
+            plugins: [
+                NodeGlobalsPolyfillPlugin({
+                    process: true,
+                    buffer: true
+                })
+            ]
+        }
+    },
     resolve: {
         alias: {
             vue: 'vue/dist/vue.esm-bundler.js'
