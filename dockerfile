@@ -8,11 +8,12 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Etapa 2: Node para build do Vue
-FROM node:16 AS node-build
+FROM node:18 AS node-build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm run build
 
 # Etapa 3: Final - rodar Laravel
