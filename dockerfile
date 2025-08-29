@@ -10,24 +10,31 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 # Etapa 2: Node para build do Vue
 FROM node:18 AS node-build
 WORKDIR /app
+
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
 COPY package*.json ./
 RUN npm install
 COPY . .
-ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm run build
 
-# Etapa 3: Final - rodar Laravel
+# Etapa 3: Container final para rodar Laravel
 FROM php-base
 WORKDIR /app
 
-# Copiar arquivos do projeto
+# Copiar todo o projeto
 COPY . .
+
+# Copiar build do Vue para o Laravel (se necessário)
 COPY --from=node-build /app/public/js /app/public/js
 COPY --from=node-build /app/public/css /app/public/css
 
-# Instalar dependências PHP
+# Instalar dependências Laravel
 RUN composer install --no-dev --optimize-autoloader
 RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
 
-# Start command
+# Expor porta usada pelo Laravel
+EXPOSE 8000
+
+# Comando para rodar Laravel
 CMD php artisan serve --host 0.0.0.0 --port $PORT
