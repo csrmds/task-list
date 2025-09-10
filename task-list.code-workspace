@@ -4,16 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "../../sdesk"
-		},
-		{
-			"path": "../simple-post"
-		},
-		{
-			"path": "../../inventories"
-		},
-		{
-			"path": "../portfolio-page"
+			"path": "../frontend"
 		}
 	],
 	"settings": {}

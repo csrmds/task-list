@@ -35,6 +35,8 @@ class GoogleCalendarController extends Controller
 
         try {
             $eventData= $request->input('eventData');
+
+            //logger("googleCalendar create event eventData: ", [$eventData]);
         
             $event= new \Google_Service_Calendar_Event([
                 'summary'=> $eventData['summary'],
@@ -54,9 +56,9 @@ class GoogleCalendarController extends Controller
             return response()->json([
                 'success'=> true,
                 'message'=> 'Evento criado com sucesso',
-                'data'=> [$event, $updateTable]
+                'data'=> $event
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success'=> false,
                 'message'=> 'Erro ao criar evento',
@@ -92,11 +94,10 @@ class GoogleCalendarController extends Controller
                 'message'=> 'Evento atualizado com sucesso',
                 'data'=> $updateEvent
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success'=> false,
                 'message'=> 'Erro ao tentar atualizar o evento',
-                'data'=> null,
                 'error'=> $e->getMessage()
             ]);
         }
@@ -117,7 +118,7 @@ class GoogleCalendarController extends Controller
                 'data'=> [$response, $removeGoogleId]
             ]);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success'=> false,
                 'message'=> 'Erro ao tentar deletar o evento',

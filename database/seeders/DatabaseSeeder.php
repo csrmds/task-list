@@ -18,14 +18,14 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Celia Azevedo',
             'email' => 'celia@email.com',
-            'password' => Hash::make('corisco'),
+            'password' => Hash::make('senha'),
             'avatar'=> 'https://res.cloudinary.com/dufaejhwh/image/upload/v1753755908/avatar_mulher_chanel_jhcvt5.jpg'
         ]);
 
         User::factory()->create([
             'name' => 'Cris Marins',
             'email' => 'cris@email.com',
-            'password' => Hash::make('corisco'),
+            'password' => Hash::make('senha'),
             'avatar'=> 'https://res.cloudinary.com/dufaejhwh/image/upload/v1755651826/avatar_mulher_tranças_agvtpm.jpg'
         ]);
     }

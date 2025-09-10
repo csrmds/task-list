@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 use Google_Client;
 use Google_Service_Calendar;
@@ -124,10 +125,10 @@ class TaskController extends Controller
      */
     public function destroy(Request $request)
     {
-
+        //logger("task destroy request: ", [$request->input('taskData')]);
         try {
-            $task= json_decode($request->query('taskData'));
-            $id= $task->id;
+            $taskData= $request->input('taskData');
+            $id= $taskData['id'];
             $deleted= Task::destroy($id);
             return response()->json([
                 'success'=> true,

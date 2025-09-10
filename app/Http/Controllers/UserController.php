@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
-//use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller {
 
@@ -68,8 +68,9 @@ class UserController extends Controller {
     }
 
     public function authCallback(Request $request) {
+        $frontendUrl= env('APP_URL');
         
-        try {            
+        try {
             $googleUser= Socialite::driver('google')->stateless()->user();
 
             $user= User::updateOrCreate(
@@ -86,28 +87,26 @@ class UserController extends Controller {
 
             Auth::login($user);
             
-            return redirect('/')->with([
-                'success'=> true,
-                'userData'=> Auth::user()->email,
-                'message'=> "Autenticação realizada com sucesso"
-            ]);
-        } catch(Exception $e) {
-            logger("login error: ", [$e->getMessage()]);
-
-            return redirect('/login')->withErrors(['google'=> 'erro ao autenticar com o Google']);
+            $token= $user->createToken('api-token')->plainTextToken;
+            
+            return redirect($frontendUrl."?google_auth=success&email=$user->email&name=$user->name&last_name=$user->last_name&avatar=$user->avatar&access_token=$token");
+        } catch(\Exception $e) {
+            //logger("login error: ", [$e->getMessage()]);
+            return redirect($frontendUrl . '?google_auth=error&message=erro_ao_autenticar');
         }
 
     }
 
-    public function logout() {
+    public function logout(Request $request) {
 
         try {
-            Auth::logout();
-            return redirect('/login')->with([
+            $request->user()->tokens()->delete();
+
+            return response()->json([
                 'success'=> true,
                 'message'=> "logoff feito com sucesso",
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success'=> false,
                 'message'=> 'Erro ao fazer logoff',
@@ -119,6 +118,8 @@ class UserController extends Controller {
 
     public function login(Request $request) {
 
+        //logger("login attempt: ", [$request->input()]);
+
         try {
 
             $credentials= $request->validate([
@@ -127,22 +128,26 @@ class UserController extends Controller {
             ]);
 
 
-            if (Auth::attempt($credentials)) {
-                $request->session()->regenerate();
-
-                return response()->json([
-                    'success'=> true,
-                    'message'=> "Login feito com sucesso",
-                ]);
-            } else {
+            if (!Auth::attempt($credentials)) {
                 return response()->json([
                     'success'=> false,
                     'message'=> "Usuário ou senha inválidos"
                 ]);
             }
 
+            $user= Auth::user();
+
+            $token= $user->createToken('api-token')->plainTextToken;
+
+            return response()->json([
+                'success'=> true,
+                'message'=> 'Login feito com sucesso',
+                'token'=> $token,
+                'data'=> $user
+            ]);
+
             
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return response()->json([
                 'success'=> false,
                 'message'=> 'Erro ao fazer login',
@@ -150,6 +155,27 @@ class UserController extends Controller {
             ]);
         }
 
+    }
+
+    public function authCheck(Request $request) {
+        try {
+            $user = Auth::user();
+
+            if ($user) {
+                return response()->json([
+                    'success'=> true,
+                    'data'=> $user
+                ]);
+            }
+            
+        } catch (\Exception $e) {
+            //logger('Erro em authCheck: ', [$e->getMessage()]);
+            return response()->json([
+                'success'=> false,
+                'error'=> $e->getMessage(),
+                'message'=> 'Usuário não autenticado'
+            ]);
+        }
     }
 
 }
