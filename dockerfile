@@ -7,27 +7,12 @@ RUN apt-get update && apt-get install -y \
 # Instalar Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Etapa 2: Node para build do Vue
-FROM node:18 AS node-build
-WORKDIR /app
-
-ENV NODE_OPTIONS=--openssl-legacy-provider
-
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# Etapa 3: Container final para rodar Laravel
+# Etapa final: Container para rodar Laravel
 FROM php-base
 WORKDIR /app
 
-# Copiar todo o projeto
+# Copiar todo o projeto backend
 COPY . .
-
-# Copiar build do Vue para o Laravel (se necessário)
-COPY --from=node-build /app/public/js /app/public/js
-COPY --from=node-build /app/public/css /app/public/css
 
 # Instalar dependências Laravel
 RUN composer install --no-dev --optimize-autoloader
