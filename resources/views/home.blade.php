@@ -3,10 +3,6 @@
 @section("content")
 
 <v-container >
-
-	@if (Auth::check())
-		<home :user-data='@json(Auth::user())'></home>
-	@endif
 	
 
 </v-container>
