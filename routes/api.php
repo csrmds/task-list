@@ -20,3 +20,42 @@ Route::get('/auth/check', [App\Http\Controllers\UserController::class, 'authChec
 Route::post('/gcalendar/createevent', [App\Http\Controllers\GoogleCalendarController::class, 'createEvent'])->middleware('auth:sanctum');
 Route::post('/gcalendar/updateevent', [App\Http\Controllers\GoogleCalendarController::class, 'updateEvent'])->middleware('auth:sanctum');
 Route::post('/gcalendar/deleteevent', [App\Http\Controllers\GoogleCalendarController::class, 'deleteEvent'])->middleware('auth:sanctum');
+
+
+Route::get('/xb', function () {
+	try {
+		\DB::connection()->getPdo();
+
+		$query= User::all();
+
+		
+	return response()->json($query);
+	} catch (\Exception $e) {
+		return 'Erro na conexão: ' . $e->getMessage();
+	}
+})->middleware('auth:sanctum');
+
+Route::get('/xa', function () {
+	try {
+		$dbConnection= env('DB_CONNECTION');
+		$dbHost= env('DB_USERNAME');
+		$dbUrl= env('DB_URL');
+		$dbUser= env('DB_USERNAME');
+		$dbDatabase= env('DB_DATABASE');
+		$dbPassword= env('DB_PASSWORD');
+
+		//$query= User::all();
+
+		
+	return response()->json([
+		'Connection'=> $dbConnection,
+		'host'=> $dbHost,
+		'Url'=> $dbUrl,
+		'User'=> $dbUser,
+		'Database'=> $dbDatabase,
+		'pwd'=> $dbPassword,
+	]);
+	} catch (\Exception $e) {
+		return 'Erro na conexão: ' . $e->getMessage();
+	}
+})->middleware('auth:sanctum');
