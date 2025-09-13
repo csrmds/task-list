@@ -27,24 +27,21 @@ Route::get('/xb', function () {
 		\DB::connection()->getPdo();
 
 		$query= User::all();
-
 		
 	return response()->json($query);
 	} catch (\Exception $e) {
 		return 'Erro na conexão: ' . $e->getMessage();
 	}
-})->middleware('auth:sanctum');
+});
 
 Route::get('/xa', function () {
 	try {
 		$dbConnection= env('DB_CONNECTION');
-		$dbHost= env('DB_USERNAME');
+		$dbHost= env('DB_HOST');
 		$dbUrl= env('DB_URL');
 		$dbUser= env('DB_USERNAME');
 		$dbDatabase= env('DB_DATABASE');
 		$dbPassword= env('DB_PASSWORD');
-
-		//$query= User::all();
 
 		
 	return response()->json([
@@ -58,4 +55,4 @@ Route::get('/xa', function () {
 	} catch (\Exception $e) {
 		return 'Erro na conexão: ' . $e->getMessage();
 	}
-})->middleware('auth:sanctum');
+});
