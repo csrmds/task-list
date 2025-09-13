@@ -178,4 +178,22 @@ class UserController extends Controller {
         }
     }
 
+    public function teste(Resquest $request) {
+        try {
+            //$user = Auth::user();
+            $var= env('DB_CONNECTION');
+            return response()->json([
+                'teste'=> "qq informação de retorno",
+                'var'=> $var
+            ]);
+
+        } catch(\Exception $e) {
+            return response()->json([
+                'success'=> false,
+                'error'=> $e->getMessage(),
+                'message'=> 'Erro'
+            ]);
+        }
+    }
+
 }

@@ -13,3 +13,5 @@ Route::get('/xc', function () {
 		return 'Erro na conexão: ' . $e->getMessage();
 	}
 });
+
+Route::get('/teste', [App\Http\Controllers\UserController::class, 'teste']);
