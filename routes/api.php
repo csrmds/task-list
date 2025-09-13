@@ -36,12 +36,12 @@ Route::get('/xb', function () {
 
 Route::get('/xa', function () {
 	try {
-		$dbConnection= env('DB_CONNECTION');
-		$dbHost= env('DB_HOST');
-		$dbUrl= env('DB_URL');
-		$dbUser= env('DB_USERNAME');
-		$dbDatabase= env('DB_DATABASE');
-		$dbPassword= env('DB_PASSWORD');
+		$dbConnection= env('DBA_CONNECTION');
+		$dbHost= env('DBA_HOST');
+		$dbUrl= env('DBA_URL');
+		$dbUser= env('DBA_USERNAME');
+		$dbDatabase= env('DBA_DATABASE');
+		$dbPassword= env('DBA_PASSWORD');
 
 		
 	return response()->json([
