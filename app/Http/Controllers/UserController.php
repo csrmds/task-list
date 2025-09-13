@@ -159,7 +159,7 @@ class UserController extends Controller {
                 'success'=> false,
                 'message'=> 'Erro ao fazer login',
                 'error'=> $e->getMessage(),
-                'data'=> [$dbHost, $dbUrl, $dbUser, $dbDatabase]
+                'data'=> [$dbConnection, $dbHost, $dbUrl, $dbUser, $dbDatabase]
             ]);
         }
 
