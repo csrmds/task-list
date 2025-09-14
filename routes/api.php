@@ -111,7 +111,7 @@ Route::get('/manual-db-test', function () {
         ]);
 
         // Teste simples: listar tabelas
-        $stmt = $pdo->query("SELECT * FROM tasks WHERE schemaname = 'tasklist'");
+        $stmt = $pdo->query("SELECT * FROM tasks");
         $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         return response()->json([
