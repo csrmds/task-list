@@ -62,9 +62,13 @@ Route::get('/xa', function () {
 Route::get('/xb', function () {
 	try {
 		\DB::connection()->getPdo();
-		$query= User::all();
+
+		$config= DB::connection()->getConfig();
+		//$query= User::all();
+
+
 		
-	return response()->json($query);
+	    return response()->json($config);
 	} catch (\Exception $e) {
 		return 'Erro na conexão: ' . $e->getMessage();
 	}
@@ -84,7 +88,7 @@ Route::get('/xc', function() {
         // Verificar arquivos .env na raiz do projeto
         $projectRoot = base_path();
         $envFiles = [];
-        foreach (glob($projectRoot . '/*.env') as $envFile) {
+        foreach (glob($projectRoot . '/.env*') as $envFile) {
             $envFiles[] = basename($envFile);
         }
 
