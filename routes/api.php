@@ -22,10 +22,46 @@ Route::post('/gcalendar/updateevent', [App\Http\Controllers\GoogleCalendarContro
 Route::post('/gcalendar/deleteevent', [App\Http\Controllers\GoogleCalendarController::class, 'deleteEvent'])->middleware('auth:sanctum');
 
 
+Route::get('/xa', function () {
+	try {
+		$dbaConnection= env('DBA_CONNECTION');
+		$dbaHost= env('DBA_HOST');
+		$dbaUrl= env('DBA_URL');
+		$dbaUser= env('DBA_USERNAME');
+		$dbaDatabase= env('DBA_DATABASE');
+		$dbaPassword= env('DBA_PASSWORD');
+		
+		$dbConnection= env('DB_CONNECTION');
+		$dbHost= env('DB_HOST');
+		$dbUrl= env('DB_URL');
+		$dbUser= env('DB_USERNAME');
+		$dbDatabase= env('DB_DATABASE');
+		$dbPassword= env('DB_PASSWORD');
+		
+	return response()->json([
+		'tasklistdb'=> [
+			'Connection'=> $dbaConnection,
+			'host'=> $dbaHost,
+			'Url'=> $dbaUrl,
+			'User'=> $dbaUser,
+			'Database'=> $dbaDatabase,
+		],
+		'.env'=> [
+			'Connection'=> $dbConnection,
+			'host'=> $dbHost,
+			'Url'=> $dbUrl,
+			'User'=> $dbUser,
+			'Database'=> $dbDatabase,
+		]
+	]);
+	} catch (\Exception $e) {
+		return 'Erro na conexão: ' . $e->getMessage();
+	}
+});
+
 Route::get('/xb', function () {
 	try {
 		\DB::connection()->getPdo();
-
 		$query= User::all();
 		
 	return response()->json($query);
@@ -34,30 +70,7 @@ Route::get('/xb', function () {
 	}
 });
 
-Route::get('/xa', function () {
-	try {
-		$dbConnection= env('DBA_CONNECTION');
-		$dbHost= env('DBA_HOST');
-		$dbUrl= env('DBA_URL');
-		$dbUser= env('DBA_USERNAME');
-		$dbDatabase= env('DBA_DATABASE');
-		$dbPassword= env('DBA_PASSWORD');
-
-		
-	return response()->json([
-		'Connection'=> $dbConnection,
-		'host'=> $dbHost,
-		'Url'=> $dbUrl,
-		'User'=> $dbUser,
-		'Database'=> $dbDatabase,
-		'pwd'=> $dbPassword,
-	]);
-	} catch (\Exception $e) {
-		return 'Erro na conexão: ' . $e->getMessage();
-	}
-});
-
-Route::get('xc', function() {
+Route::get('/xc', function() {
 	try {
         // Listar arquivos em /etc/secrets
         $secretsPath = '/etc/secrets';
@@ -82,4 +95,33 @@ Route::get('xc', function() {
     } catch (\Exception $e) {
         return response()->json(['error' => $e->getMessage()], 500);
    }
+});
+
+Route::get('/manual-db-test', function () {
+    try {
+        $host = env('DB_HOST');
+        $port = env('DB_PORT');
+        $dbname = env('DB_DATABASE');
+        $user = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
+
+        $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+        $pdo = new PDO($dsn, $user, $password, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ]);
+
+        // Teste simples: listar tabelas
+        $stmt = $pdo->query("SELECT * FROM tasks WHERE schemaname = 'tasklist'");
+        $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        return response()->json([
+            'success' => true,
+            'tables' => $tables
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage()
+        ], 500);
+    }
 });
