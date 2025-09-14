@@ -56,3 +56,30 @@ Route::get('/xa', function () {
 		return 'Erro na conexão: ' . $e->getMessage();
 	}
 });
+
+Route::get('xc', function() {
+	try {
+        // Listar arquivos em /etc/secrets
+        $secretsPath = '/etc/secrets';
+        $secretsFiles = [];
+        if (is_dir($secretsPath)) {
+            $secretsFiles = array_values(array_filter(scandir($secretsPath), function($file) use ($secretsPath) {
+                return is_file($secretsPath . '/' . $file);
+            }));
+        }
+
+        // Verificar arquivos .env na raiz do projeto
+        $projectRoot = base_path();
+        $envFiles = [];
+        foreach (glob($projectRoot . '/*.env') as $envFile) {
+            $envFiles[] = basename($envFile);
+        }
+
+        return response()->json([
+            'secrets_files' => $secretsFiles,
+            'env_files' => $envFiles,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+   }
+});
