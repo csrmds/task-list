@@ -10,6 +10,12 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
     require $maintenance;
 }
 
+$customEnv = dirname(__DIR__) . '/etc/secrets/tasklistdb.env';
+if (file_exists($customEnv)) {
+    $dotenv = Dotenv\Dotenv::createImmutable('/etc/secrets', 'tasklistdb.env');
+    $dotenv->load();
+}
+
 // Register the Composer autoloader...
 require __DIR__.'/../vendor/autoload.php';
 
